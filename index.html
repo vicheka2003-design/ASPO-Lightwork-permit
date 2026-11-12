@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Light Work Request Tracker</title>
+<style>
+:root{--bg:#f6f7f9;--card:#fff;--tx:#1a1d21;--mut:#6b7280;--bd:#e3e6ea;--ac:#2563eb;--hot:#dc2626;--hotbg:#fee2e2;--ok:#16a34a;--okbg:#dcfce7;--wait:#b45309;--waitbg:#fef3c7;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;--bg:#111418;--card:#1b1f25;--tx:#eceff3;--mut:#9aa3af;--bd:#2d333b;--ac:#60a5fa;--hot:#fca5a5;--hotbg:#4c1d1d;--ok:#86efac;--okbg:#14351f;--wait:#fcd34d;--waitbg:#3d2f0a}}
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--tx);font:14px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:1400px;margin:0 auto;padding:16px}
+h1{font-size:20px;margin:0 0 12px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:14px}
+.stat{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:10px 12px}
+.stat b{display:block;font-size:22px}.stat span{color:var(--mut);font-size:12px}
+.bar{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+input,select,textarea,button{font:inherit;color:var(--tx);background:var(--card);border:1px solid var(--bd);border-radius:8px;padding:7px 10px}
+button{cursor:pointer}button.p{background:var(--ac);color:#fff;border-color:var(--ac)}
+input[type=search]{flex:1;min-width:160px}
+details{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:10px 12px;margin-bottom:12px}
+summary{cursor:pointer;font-weight:600}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:8px;margin:10px 0}
+.grid label{display:flex;flex-direction:column;font-size:12px;color:var(--mut);gap:3px}
+textarea{width:100%;min-height:110px;margin:8px 0}
+.tw{overflow-x:auto;background:var(--card);border:1px solid var(--bd);border-radius:10px}
+table{width:100%;border-collapse:collapse;min-width:1150px}
+th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--bd);vertical-align:top}
+th{cursor:pointer;font-size:12px;color:var(--mut);white-space:nowrap;user-select:none}
+tr:last-child td{border-bottom:0}
+.tag{display:inline-block;padding:2px 8px;border-radius:99px;font-size:12px;font-weight:600;white-space:nowrap}
+.hot{background:var(--hotbg);color:var(--hot)}.no{background:var(--okbg);color:var(--ok)}
+select.st{font-weight:600;font-size:12px;padding:3px 6px;border-radius:99px}
+.s-Pending{background:var(--waitbg);color:var(--wait)}.s-Approved{background:var(--okbg);color:var(--ok)}.s-Rejected{background:var(--hotbg);color:var(--hot)}.s-Completed,.s-Cancelled{background:var(--bd);color:var(--mut)}
+.tabs{display:flex;gap:6px;margin-bottom:12px}.tabs button.on{background:var(--ac);color:#fff;border-color:var(--ac)}.cd{font-weight:600;white-space:nowrap}.cd.urg{color:var(--wait)}.cd.run{color:var(--ok)}.cd.late{color:var(--hot)}
+.hd{display:flex;align-items:center;gap:12px;margin-bottom:14px}.hd i{font-style:normal;font-size:22px;background:var(--ac);border-radius:12px;width:44px;height:44px;display:grid;place-items:center}.hd small{display:block;color:var(--mut);font-size:12px}
+.stat{display:flex;gap:10px;align-items:center;border-left:4px solid var(--ac)}.stat i{font-style:normal;font-size:24px}.stat.w{border-left-color:var(--wait)}.stat.g{border-left-color:var(--ok)}.stat.r{border-left-color:var(--hot)}
+.alert{display:flex;flex-wrap:wrap;align-items:center;gap:10px;border-radius:10px;padding:10px 14px;margin-bottom:10px;font-weight:600}.alert.r{background:var(--hotbg);color:var(--hot);border:1px solid var(--hot)}.alert.w{background:var(--waitbg);color:var(--wait);border:1px solid var(--wait)}.alert button{margin-left:auto}
+.badge{background:var(--hot);color:#fff;border-radius:99px;padding:0 7px;font-size:11px;margin-left:6px}
+tr.late td{background:var(--hotbg)}tr.today td{background:var(--waitbg)}th{background:var(--bg)}a{color:var(--ac);text-decoration:none}
+.pg{display:flex;gap:8px;align-items:center;justify-content:center;margin:12px 0;color:var(--mut)}
+.x{border:0;background:none;color:var(--mut);padding:2px 6px}
+.note{color:var(--mut);font-size:12px;margin:6px 0 0}
+.empty{padding:30px;text-align:center;color:var(--mut)}
+</style></head><body><div class="wrap">
+<div class="hd"><i>💡</i><div><h1 style="margin:0">Light Work Tracker</h1><small>Airport work permit requests · approvals · schedule</small></div></div><div id="alerts"></div>
+<div class="stats" id="stats"></div>
+
+<details id="add"><summary>＋ Add request (paste Outlook email or fill in)</summary>
+<textarea id="paste" placeholder="Paste the whole email here (Ctrl+A in the email, copy, paste), then click the button below."></textarea>
+<button id="parse">Read email → fill form</button>
+<div class="grid">
+<label>Start date<input type="date" id="f-start"></label>
+<label>End date<input type="date" id="f-end"></label>
+<label>Time<input id="f-time" placeholder="8:00 AM - 5:00 PM"></label>
+<label>Type of work<input id="f-type"></label>
+<label>Location<input id="f-loc"></label>
+<label>Company<input id="f-co"></label>
+<label>Submitted by<input id="f-by"></label>
+<label>Phone<input id="f-ph"></label>
+<label>Hot work?<select id="f-hot"><option value="0">No</option><option value="1">Yes</option></select></label>
+</div>
+<button class="p" id="save">Save request</button>
+<span class="note" id="msg"></span>
+</details>
+
+<div class="tabs"><button id="tab-all" class="on">📋 All requests</button><button id="tab-ok">✅ Approved – work schedule</button></div>
+<div class="bar">
+<input type="search" id="q" placeholder="🔍 Search company, work, location, name…">
+<select id="fco"><option value="">All companies</option></select>
+<select id="fhot"><option value="">Hot work: all</option><option value="1">Hot work only</option><option value="0">No hot work</option></select>
+<select id="fst"><option value="">All status</option></select>
+<button id="imp">📥 Import CSV</button><button id="exp">📤 Export CSV</button>
+<input type="file" id="file" accept=".csv" hidden>
+</div>
+
+<div class="tw"><table><thead><tr id="head"></tr></thead><tbody id="body"></tbody></table></div>
+<div class="pg"><button id="prev">‹</button><span id="pinfo"></span><button id="next">›</button></div>
+<p class="note">To change a status, use the dropdown in the Status column of that row. Data is saved in this browser only, so use Export CSV to back up. CSV columns: start, end, time, type, location, company, by, phone, hot, status.</p>
+</div>
+<script>
+const KEY="lw-requests",STS=["Pending","Approved","Rejected","Completed","Cancelled"],SI={Pending:"⏳",Approved:"✅",Rejected:"❌",Completed:"🏁",Cancelled:"🚫"};
+let rows=[],view="all",sortK="start",sortD=-1,page=0;const PS=50;
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+function load(){try{rows=JSON.parse(localStorage.getItem(KEY)||"[]")}catch(e){rows=[]}}
+function store(){try{localStorage.setItem(KEY,JSON.stringify(rows))}catch(e){}}
+const stOf=r=>STS.includes(r.status)?r.status:"Pending";
+function pd(s){if(!s)return"";s=s.trim();let m=s.match(/(\d{1,2})[\/.\-](\d{1,2})[\/.\-](\d{2,4})/);
+ if(m){let y=+m[3];if(y<100)y+=2000;return`${y}-${String(m[2]).padStart(2,"0")}-${String(m[1]).padStart(2,"0")}`}
+ m=s.match(/(\d{4})-(\d{2})-(\d{2})/);if(m)return m[0];
+ const d=new Date(s);return isNaN(d)?"":`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`}
+const isHot=v=>/^(y|yes|true|1|hot)/i.test(String(v).trim());
+function field(t,labels){const m=t.match(new RegExp("(?:"+labels+")\\s*[:\\-–]\\s*(.+)","i"));return m?m[1].trim():""}
+function mk(d,mon,y){const t=Date.parse(`${mon} ${d}, ${y} 12:00`);if(isNaN(t))return"";const x=new Date(t);return `${x.getFullYear()}-${String(x.getMonth()+1).padStart(2,"0")}-${String(x.getDate()).padStart(2,"0")}`}
+function dateRange(l,nn){let m=l.match(/(?<!\d)(\d{1,2})\s*(?:to|-|–)\s*(\d{1,2})\s*-?\s*([A-Za-z]{3,9})\.?\s*-?\s*(\d{4})/);
+ if(m)return[mk(m[1],m[3],m[4]),mk(m[2],m[3],m[4])];
+ const n=[...l.matchAll(/(?<!\d)(\d{1,2})\s*-?\s*([A-Za-z]{3,9})\.?\s*-?\s*(\d{4})/g)].map(x=>mk(x[1],x[2],x[3])).filter(Boolean);
+ if(n.length)return[n[0],n[n.length-1]];
+ const u=nn?[]:[...l.matchAll(/\d{1,2}[\/.\-]\d{1,2}[\/.\-]\d{2,4}|\d{4}-\d{2}-\d{2}/g)].map(x=>pd(x[0])).filter(Boolean);
+ return u.length?[u[0],u[u.length-1]]:["",""]}
+$("parse").onclick=()=>{const t=$("paste").value;
+ const dl=field(t,"starting\\s*date|start\\s*date|dates?|from");const dr=dateRange(dl||t,!dl);
+ $("f-start").value=dr[0];$("f-end").value=dr[1]||dr[0];
+ const pm=t.match(/permit\s+to\s+(.+)/i);
+ $("f-type").value=(pm?pm[1]:field(t,"type\\s*of\\s*work|work\\s*type|description|scope")||field(t,"subject")||((t.match(/light\s*work\s+(?!request)(.+)/i)||[])[1])||"").replace(/^subject\s*:\s*/i,"").trim();
+ {const lm=t.match(/location[^\n:]*:\s*\n+\s*([^\n]+)/i);$("f-loc").value=field(t,"location|area|zone")||(lm?lm[1].trim():"")}
+ $("f-time").value=field(t,"time|working\\s*hours");
+ const tm=t.match(/^\s*([A-Za-z][A-Za-z0-9&.\- ]*?)\s+(?:maintenance\s+|electrical\s+|mep\s+)?team\b/im);
+ const tg=t.match(/\[([A-Za-z0-9 &.\-]{2,15})\]/),lg=t.match(/^\s*([A-Za-z][^\n]*?\b(?:Co\.?,?\s*Ltd\.?|Company|Limited|Corporation))/im);const bh=t.match(/on behalf of\s+(?:the\s+)?([A-Za-z0-9&.\- ]+?)(?:[’']s)?\b/i);
+ $("f-co").value=field(t,"company|contractor|vendor")||(tg?tg[1].trim():"")||(bh?bh[1].trim():"")||(tm?tm[1].trim():"")||(lg?lg[1].trim():"");
+ const sg=t.match(/(?:regards|sincerely(?:\s+yours)?)[,:]?\s*\n+[\s\-_=*]*([A-Za-z][^\n(]*)/i);const tel=t.match(/\b(?:tel|mobile|mob|phone)\b[^\d+\n]*(\+?\d[\d\s()+-]{6,}\d)/i);
+ const ph=t.match(/(\+?855[\d\s-]{7,}\d|0\d{2}[\s-]?\d{3}[\s-]?\d{3,4})/);
+ $("f-by").value=sg?sg[1].trim():field(t,"requested\\s*by|name|submitted\\s*by");
+ $("f-ph").value=tel?tel[1].replace(/[()]/g,"").trim():(ph?ph[1].trim():"");
+ const hotNo=/hot\s*work\s*[:\-–]?\s*(no|n\/a|not)/i.test(t);
+ $("f-hot").value=!hotNo&&(/hot\s*work\s*[:\-–]?\s*(yes|y|required|true)/i.test(t)||/\b(weld\w*|grind\w*|gas cutting|flame cutting|torch|brazing|soldering)\b/i.test(t))?"1":"0";
+ $("msg").textContent=dr[0]?" Check the fields (especially company and hot work), then save.":" No dates found in the email text. If they are in the attached PDF, paste the PDF text too, or type the dates."};
+$("save").onclick=()=>{const v=i=>$(i).value.trim();
+ const r={start:v("f-start"),end:v("f-end")||v("f-start"),time:v("f-time"),type:v("f-type"),location:v("f-loc"),company:v("f-co"),by:v("f-by"),phone:v("f-ph"),hot:$("f-hot").value==="1",status:"Pending"};
+ if(!r.start||!r.company){$("msg").textContent=" Start date and company are required.";return}
+ rows.push(r);store();["paste","f-start","f-end","f-time","f-type","f-loc","f-co","f-by","f-ph"].forEach(i=>$(i).value="");$("msg").textContent=" Saved ✓";render()};
+function csvParse(t){const out=[];let row=[],c="",q=false;for(let i=0;i<t.length;i++){const ch=t[i];
+ if(q){if(ch=='"'&&t[i+1]=='"'){c+='"';i++}else if(ch=='"')q=false;else c+=ch}
+ else if(ch=='"')q=true;else if(ch==","){row.push(c);c=""}
+ else if(ch=="\n"||ch=="\r"){if(ch=="\r"&&t[i+1]=="\n")i++;row.push(c);c="";if(row.some(x=>x.trim()))out.push(row);row=[]}else c+=ch}
+ row.push(c);if(row.some(x=>x.trim()))out.push(row);return out}
+$("imp").onclick=()=>$("file").click();
+$("file").onchange=e=>{const f=e.target.files[0];if(!f)return;const rd=new FileReader();rd.onload=()=>{
+ const t=csvParse(String(rd.result));if(t.length<2)return;const h=t[0].map(x=>x.trim().toLowerCase());
+ const ix=re=>h.findIndex(x=>re.test(x));
+ const I={a:ix(/start|from/),b:ix(/^end|until/),tm:ix(/time/),c:ix(/type|desc/),l:ix(/loc/),d:ix(/company|contractor/),by:ix(/^by$|submit|requester|name/),p:ix(/phone|tel/),e:ix(/hot/),s:ix(/status/)};
+ const g=(r,k)=>(I[k]>=0?(r[I[k]]||""):"").trim();let n=0;
+ t.slice(1).forEach(r=>{const s=pd(g(r,"a"));if(!s)return;const st=STS.find(x=>x.toLowerCase()===g(r,"s").toLowerCase())||"Pending";
+ rows.push({start:s,end:pd(g(r,"b"))||s,time:g(r,"tm"),type:g(r,"c"),location:g(r,"l"),company:g(r,"d"),by:g(r,"by"),phone:g(r,"p"),hot:isHot(g(r,"e")),status:st});n++});
+ store();render();alert(n+" requests imported")};rd.readAsText(f);e.target.value=""};
+$("exp").onclick=()=>{const q=v=>'"'+String(v||"").replace(/"/g,'""')+'"';
+ const t="start,end,time,type,location,company,by,phone,hot,status\n"+rows.map(r=>[r.start,r.end,q(r.time),q(r.type),q(r.location),q(r.company),q(r.by),q(r.phone),r.hot?"Yes":"No",stOf(r)].join(",")).join("\n");
+ const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([t],{type:"text/csv"}));a.download="lightwork-requests.csv";a.click()};
+const COLS=[["start","📅 Start"],["end","🏁 End"],["time","🕓 Time"],["type","🛠️ Type of work"],["location","📍 Location"],["company","🏢 Company"],["by","👤 Submitted by"],["phone","📞 Phone"],["hot","🔥 Hot work"],["st","🏷️ Status"]];
+function setHead(){$("head").innerHTML=(view==="ok"?[["start","⏱️ Countdown"]]:[]).concat(COLS).map(c=>`<th data-k="${c[0]}">${c[1]}</th>`).join("")+"<th></th>"}
+const tstr=()=>{const n=new Date();return `${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,"0")}-${String(n.getDate()).padStart(2,"0")}`};
+const overdue=()=>rows.filter(r=>stOf(r)==="Approved"&&(r.end||r.start)<tstr());
+function renderAlerts(){const o=overdue(),e=rows.filter(r=>stOf(r)==="Approved"&&(r.end||r.start)===tstr());let h="";
+ if(o.length)h+=`<div class="alert r">🚨 ${o.length} approved work${o.length>1?"s have":" has"} ended. Please close ${o.length>1?"them":"it"} (mark Completed): ${esc(o.slice(0,3).map(r=>r.company+" · "+(r.location||r.type)).join(" | "))}${o.length>3?" …":""}<button data-go="1">View</button></div>`;
+ if(e.length)h+=`<div class="alert w">⏰ ${e.length} work${e.length>1?"s end":" ends"} today<button data-go="1">View</button></div>`;
+ $("alerts").innerHTML=h;$("tab-ok").innerHTML=`✅ Approved – work schedule${o.length?`<span class="badge">${o.length}</span>`:""}`;document.title=(o.length?`(${o.length}) `:"")+"Light Work Tracker"}
+$("alerts").onclick=e=>{if(e.target.dataset?.go)setView("ok")};
+function setView(v){view=v;sortK="start";sortD=v==="ok"?1:-1;page=0;$("tab-all").classList.toggle("on",v==="all");$("tab-ok").classList.toggle("on",v==="ok");setHead();render()}
+$("tab-all").onclick=()=>setView("all");$("tab-ok").onclick=()=>setView("ok");
+function cd(r){const D=864e5,n=new Date(),t0=Date.UTC(n.getFullYear(),n.getMonth(),n.getDate()),p=s=>{const[a,b,c]=s.split("-");return Date.UTC(+a,b-1,+c)};const s=p(r.start),e=p(r.end||r.start);
+ if(t0<s){const d=Math.round((s-t0)/D);return{k:d<=2?"urg":"",txt:d===1?"⏳ Starts tomorrow":"⏳ Starts in "+d+" days"}}
+ if(t0<=e){const left=Math.round((e-t0)/D),dn=Math.round((t0-s)/D)+1,tot=Math.round((e-s)/D)+1;return{k:"run",txt:`🔧 Working · day ${dn} of ${tot} · ${left?left+(left>1?" days left":" day left"):"last day"}`}}
+ return{k:"late",txt:`🚨 Ended ${Math.round((t0-e)/D)} day(s) ago · mark Completed`}}
+$("head").onclick=e=>{const k=e.target.dataset?.k;if(!k)return;sortD=sortK===k?-sortD:1;sortK=k;page=0;render()};
+$("fst").innerHTML+=STS.map(s=>`<option value="${s}">${SI[s]} ${s}</option>`).join("");
+["q","fco","fhot","fst"].forEach(i=>$(i).oninput=()=>{page=0;render()});
+$("prev").onclick=()=>{if(page>0){page--;render()}};$("next").onclick=()=>{page++;render()};
+function render(){
+ const cos=[...new Set(rows.map(r=>r.company).filter(Boolean))].sort(),cur=$("fco").value;
+ $("fco").innerHTML='<option value="">All companies</option>'+cos.map(c=>`<option ${c===cur?"selected":""}>${esc(c)}</option>`).join("");
+ const q=$("q").value.toLowerCase(),fh=$("fhot").value,fs=$("fst").value,fc=$("fco").value;
+ let list=rows.map((r,i)=>({...r,i,st:stOf(r)})).filter(r=>(!q||[r.company,r.type,r.location,r.by,r.phone].join(" ").toLowerCase().includes(q))&&(!fc||r.company===fc)&&(!fh||(fh==="1")===r.hot)&&(view==="ok"?r.st==="Approved":(!fs||r.st===fs)));
+ list.sort((a,b)=>{const x=a[sortK]??"",y=b[sortK]??"";return(x>y?1:x<y?-1:0)*sortD});
+ const pages=Math.max(1,Math.ceil(list.length/PS));if(page>=pages)page=pages-1;
+ const show=list.slice(page*PS,page*PS+PS);
+ $("body").innerHTML=show.length?show.map(r=>{const c=view==="ok"?cd(r):null;return `<tr class="${c?(c.k==="late"?"late":/last day/.test(c.txt)?"today":""):""}">${c?`<td class="cd ${c.k}">${esc(c.txt)}</td>`:""}<td>${esc(r.start)}</td><td>${esc(r.end)}</td><td>${esc(r.time)}</td><td>${esc(r.type)}</td><td>${esc(r.location)}</td><td>${esc(r.company)}</td><td>${esc(r.by)}</td><td>${r.phone?`<a href="tel:${esc(r.phone.replace(/\s/g,""))}">📞 ${esc(r.phone)}</a>`:""}</td><td><span class="tag ${r.hot?"hot":"no"}">${r.hot?"🔥 Hot work":"No"}</span></td><td><select class="st s-${r.st}" data-s="${r.i}">${STS.map(s=>`<option value="${s}" ${s===r.st?"selected":""}>${SI[s]} ${s}</option>`).join("")}</select></td><td><button class="x" data-d="${r.i}" title="Delete">✕</button></td></tr>`}).join(""):`<tr><td colspan="11" class="empty">No requests yet. Add one above or import a CSV.</td></tr>`;
+ renderAlerts();$("pinfo").textContent=`${list.length} shown · page ${page+1}/${pages}`;
+ const c=s=>rows.filter(r=>stOf(r)===s).length;
+ $("stats").innerHTML=[["📋","","Total",rows.length],["⏳","w","Pending",c("Pending")],["✅","g","Approved",c("Approved")],["⏰","r","Ended – to close",overdue().length],["🔥","r","Hot work (pending/approved)",rows.filter(r=>r.hot&&["Pending","Approved"].includes(stOf(r))).length]].map(s=>`<div class="stat ${s[1]}"><i>${s[0]}</i><div><b>${s[3]}</b><span>${s[2]}</span></div></div>`).join("")}
+$("body").onclick=e=>{const d=e.target.dataset?.d;if(d!==undefined&&confirm("Delete this request?")){rows.splice(+d,1);store();render()}};
+$("body").onchange=e=>{const s=e.target.dataset?.s;if(s===undefined)return;rows[+s].status=e.target.value;store();render()};
+load();setHead();render();setInterval(renderAlerts,60000);
+</script></body></html>
