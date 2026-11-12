@@ -36,12 +36,14 @@ select.st{font-weight:600;font-size:12px;padding:3px 6px;border-radius:99px}
 .alert{display:flex;flex-wrap:wrap;align-items:center;gap:10px;border-radius:10px;padding:10px 14px;margin-bottom:10px;font-weight:600}.alert.r{background:var(--hotbg);color:var(--hot);border:1px solid var(--hot)}.alert.w{background:var(--waitbg);color:var(--wait);border:1px solid var(--wait)}.alert button{margin-left:auto}
 .badge{background:var(--hot);color:#fff;border-radius:99px;padding:0 7px;font-size:11px;margin-left:6px}
 tr.late td{background:var(--hotbg)}tr.today td{background:var(--waitbg)}th{background:var(--bg)}a{color:var(--ac);text-decoration:none}
+:root[data-theme="dark"]{color-scheme:dark;--bg:#111418;--card:#1b1f25;--tx:#eceff3;--mut:#9aa3af;--bd:#2d333b;--ac:#60a5fa;--hot:#fca5a5;--hotbg:#4c1d1d;--ok:#86efac;--okbg:#14351f;--wait:#fcd34d;--waitbg:#3d2f0a}
+#theme{margin-left:auto;font-size:18px;padding:6px 10px}input.rf{width:96px;font-weight:700;padding:4px 8px}input.need{border-color:var(--wait);background:var(--waitbg)}
 .pg{display:flex;gap:8px;align-items:center;justify-content:center;margin:12px 0;color:var(--mut)}
 .x{border:0;background:none;color:var(--mut);padding:2px 6px}
 .note{color:var(--mut);font-size:12px;margin:6px 0 0}
 .empty{padding:30px;text-align:center;color:var(--mut)}
 </style></head><body><div class="wrap">
-<div class="hd"><i>💡</i><div><h1 style="margin:0">Light Work Tracker</h1><small>Airport work permit requests · approvals · schedule</small></div></div><div id="alerts"></div>
+<div class="hd"><i>💡</i><div><h1 style="margin:0">Light Work Tracker</h1><small>Airport work permit requests · approvals · schedule</small></div><button id="theme" title="Switch light / dark">🌙</button></div><div id="alerts"></div>
 <div class="stats" id="stats"></div>
 
 <details id="add"><summary>＋ Add request (paste Outlook email or fill in)</summary>
@@ -56,6 +58,7 @@ tr.late td{background:var(--hotbg)}tr.today td{background:var(--waitbg)}th{backg
 <label>Company<input id="f-co"></label>
 <label>Submitted by<input id="f-by"></label>
 <label>Phone<input id="f-ph"></label>
+<label>Ref no.<input id="f-ref" placeholder="L-1209"></label>
 <label>Hot work?<select id="f-hot"><option value="0">No</option><option value="1">Yes</option></select></label>
 </div>
 <button class="p" id="save">Save request</button>
@@ -74,7 +77,7 @@ tr.late td{background:var(--hotbg)}tr.today td{background:var(--waitbg)}th{backg
 
 <div class="tw"><table><thead><tr id="head"></tr></thead><tbody id="body"></tbody></table></div>
 <div class="pg"><button id="prev">‹</button><span id="pinfo"></span><button id="next">›</button></div>
-<p class="note">To change a status, use the dropdown in the Status column of that row. Data is saved in this browser only, so use Export CSV to back up. CSV columns: start, end, time, type, location, company, by, phone, hot, status.</p>
+<p class="note">To change a status, use the dropdown in the Status column of that row. Data is saved in this browser only, so use Export CSV to back up. CSV columns: start, end, time, type, location, company, by, phone, hot, status, ref.</p>
 </div>
 <script>
 const KEY="lw-requests",STS=["Pending","Approved","Rejected","Completed","Cancelled"],SI={Pending:"⏳",Approved:"✅",Rejected:"❌",Completed:"🏁",Cancelled:"🚫"};
@@ -115,9 +118,9 @@ $("parse").onclick=()=>{const t=$("paste").value;
  $("f-hot").value=!hotNo&&(/hot\s*work\s*[:\-–]?\s*(yes|y|required|true)/i.test(t)||/\b(weld\w*|grind\w*|gas cutting|flame cutting|torch|brazing|soldering)\b/i.test(t))?"1":"0";
  $("msg").textContent=dr[0]?" Check the fields (especially company and hot work), then save.":" No dates found in the email text. If they are in the attached PDF, paste the PDF text too, or type the dates."};
 $("save").onclick=()=>{const v=i=>$(i).value.trim();
- const r={start:v("f-start"),end:v("f-end")||v("f-start"),time:v("f-time"),type:v("f-type"),location:v("f-loc"),company:v("f-co"),by:v("f-by"),phone:v("f-ph"),hot:$("f-hot").value==="1",status:"Pending"};
+ const r={start:v("f-start"),end:v("f-end")||v("f-start"),time:v("f-time"),type:v("f-type"),location:v("f-loc"),company:v("f-co"),by:v("f-by"),phone:v("f-ph"),hot:$("f-hot").value==="1",ref:v("f-ref"),status:"Pending"};
  if(!r.start||!r.company){$("msg").textContent=" Start date and company are required.";return}
- rows.push(r);store();["paste","f-start","f-end","f-time","f-type","f-loc","f-co","f-by","f-ph"].forEach(i=>$(i).value="");$("msg").textContent=" Saved ✓";render()};
+ rows.push(r);store();["paste","f-start","f-end","f-time","f-type","f-loc","f-co","f-by","f-ph","f-ref"].forEach(i=>$(i).value="");$("msg").textContent=" Saved ✓";render()};
 function csvParse(t){const out=[];let row=[],c="",q=false;for(let i=0;i<t.length;i++){const ch=t[i];
  if(q){if(ch=='"'&&t[i+1]=='"'){c+='"';i++}else if(ch=='"')q=false;else c+=ch}
  else if(ch=='"')q=true;else if(ch==","){row.push(c);c=""}
@@ -127,22 +130,22 @@ $("imp").onclick=()=>$("file").click();
 $("file").onchange=e=>{const f=e.target.files[0];if(!f)return;const rd=new FileReader();rd.onload=()=>{
  const t=csvParse(String(rd.result));if(t.length<2)return;const h=t[0].map(x=>x.trim().toLowerCase());
  const ix=re=>h.findIndex(x=>re.test(x));
- const I={a:ix(/start|from/),b:ix(/^end|until/),tm:ix(/time/),c:ix(/type|desc/),l:ix(/loc/),d:ix(/company|contractor/),by:ix(/^by$|submit|requester|name/),p:ix(/phone|tel/),e:ix(/hot/),s:ix(/status/)};
+ const I={a:ix(/start|from/),b:ix(/^end|until/),tm:ix(/time/),c:ix(/type|desc/),l:ix(/loc/),d:ix(/company|contractor/),by:ix(/^by$|submit|requester|name/),p:ix(/phone|tel/),e:ix(/hot/),s:ix(/status/),rf:ix(/^ref/)};
  const g=(r,k)=>(I[k]>=0?(r[I[k]]||""):"").trim();let n=0;
  t.slice(1).forEach(r=>{const s=pd(g(r,"a"));if(!s)return;const st=STS.find(x=>x.toLowerCase()===g(r,"s").toLowerCase())||"Pending";
- rows.push({start:s,end:pd(g(r,"b"))||s,time:g(r,"tm"),type:g(r,"c"),location:g(r,"l"),company:g(r,"d"),by:g(r,"by"),phone:g(r,"p"),hot:isHot(g(r,"e")),status:st});n++});
+ rows.push({start:s,end:pd(g(r,"b"))||s,time:g(r,"tm"),type:g(r,"c"),location:g(r,"l"),company:g(r,"d"),by:g(r,"by"),phone:g(r,"p"),hot:isHot(g(r,"e")),status:st,ref:g(r,"rf")});n++});
  store();render();alert(n+" requests imported")};rd.readAsText(f);e.target.value=""};
 $("exp").onclick=()=>{const q=v=>'"'+String(v||"").replace(/"/g,'""')+'"';
- const t="start,end,time,type,location,company,by,phone,hot,status\n"+rows.map(r=>[r.start,r.end,q(r.time),q(r.type),q(r.location),q(r.company),q(r.by),q(r.phone),r.hot?"Yes":"No",stOf(r)].join(",")).join("\n");
+ const t="start,end,time,type,location,company,by,phone,hot,status,ref\n"+rows.map(r=>[r.start,r.end,q(r.time),q(r.type),q(r.location),q(r.company),q(r.by),q(r.phone),r.hot?"Yes":"No",stOf(r),q(r.ref)].join(",")).join("\n");
  const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([t],{type:"text/csv"}));a.download="lightwork-requests.csv";a.click()};
-const COLS=[["start","📅 Start"],["end","🏁 End"],["time","🕓 Time"],["type","🛠️ Type of work"],["location","📍 Location"],["company","🏢 Company"],["by","👤 Submitted by"],["phone","📞 Phone"],["hot","🔥 Hot work"],["st","🏷️ Status"]];
+const COLS=[["ref","🔖 Ref"],["start","📅 Start"],["end","🏁 End"],["time","🕓 Time"],["type","🛠️ Type of work"],["location","📍 Location"],["company","🏢 Company"],["by","👤 Submitted by"],["phone","📞 Phone"],["hot","🔥 Hot work"],["st","🏷️ Status"]];
 function setHead(){$("head").innerHTML=(view==="ok"?[["start","⏱️ Countdown"]]:[]).concat(COLS).map(c=>`<th data-k="${c[0]}">${c[1]}</th>`).join("")+"<th></th>"}
 const tstr=()=>{const n=new Date();return `${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,"0")}-${String(n.getDate()).padStart(2,"0")}`};
 const overdue=()=>rows.filter(r=>stOf(r)==="Approved"&&(r.end||r.start)<tstr());
 function renderAlerts(){const o=overdue(),e=rows.filter(r=>stOf(r)==="Approved"&&(r.end||r.start)===tstr());let h="";
  if(o.length)h+=`<div class="alert r">🚨 ${o.length} approved work${o.length>1?"s have":" has"} ended. Please close ${o.length>1?"them":"it"} (mark Completed): ${esc(o.slice(0,3).map(r=>r.company+" · "+(r.location||r.type)).join(" | "))}${o.length>3?" …":""}<button data-go="1">View</button></div>`;
  if(e.length)h+=`<div class="alert w">⏰ ${e.length} work${e.length>1?"s end":" ends"} today<button data-go="1">View</button></div>`;
- $("alerts").innerHTML=h;$("tab-ok").innerHTML=`✅ Approved – work schedule${o.length?`<span class="badge">${o.length}</span>`:""}`;document.title=(o.length?`(${o.length}) `:"")+"Light Work Tracker"}
+ {const nr=rows.filter(r=>stOf(r)==="Approved"&&!r.ref).length;if(nr)h+=`<div class="alert w">🔖 ${nr} approved permit${nr>1?"s have":" has"} no Ref number yet<button data-go="1">View</button></div>`}$("alerts").innerHTML=h;$("tab-ok").innerHTML=`✅ Approved – work schedule${o.length?`<span class="badge">${o.length}</span>`:""}`;document.title=(o.length?`(${o.length}) `:"")+"Light Work Tracker"}
 $("alerts").onclick=e=>{if(e.target.dataset?.go)setView("ok")};
 function setView(v){view=v;sortK="start";sortD=v==="ok"?1:-1;page=0;$("tab-all").classList.toggle("on",v==="all");$("tab-ok").classList.toggle("on",v==="ok");setHead();render()}
 $("tab-all").onclick=()=>setView("all");$("tab-ok").onclick=()=>setView("ok");
@@ -158,15 +161,18 @@ function render(){
  const cos=[...new Set(rows.map(r=>r.company).filter(Boolean))].sort(),cur=$("fco").value;
  $("fco").innerHTML='<option value="">All companies</option>'+cos.map(c=>`<option ${c===cur?"selected":""}>${esc(c)}</option>`).join("");
  const q=$("q").value.toLowerCase(),fh=$("fhot").value,fs=$("fst").value,fc=$("fco").value;
- let list=rows.map((r,i)=>({...r,i,st:stOf(r)})).filter(r=>(!q||[r.company,r.type,r.location,r.by,r.phone].join(" ").toLowerCase().includes(q))&&(!fc||r.company===fc)&&(!fh||(fh==="1")===r.hot)&&(view==="ok"?r.st==="Approved":(!fs||r.st===fs)));
+ let list=rows.map((r,i)=>({...r,i,st:stOf(r)})).filter(r=>(!q||[r.company,r.type,r.location,r.by,r.phone,r.ref].join(" ").toLowerCase().includes(q))&&(!fc||r.company===fc)&&(!fh||(fh==="1")===r.hot)&&(view==="ok"?r.st==="Approved":(!fs||r.st===fs)));
  list.sort((a,b)=>{const x=a[sortK]??"",y=b[sortK]??"";return(x>y?1:x<y?-1:0)*sortD});
  const pages=Math.max(1,Math.ceil(list.length/PS));if(page>=pages)page=pages-1;
  const show=list.slice(page*PS,page*PS+PS);
- $("body").innerHTML=show.length?show.map(r=>{const c=view==="ok"?cd(r):null;return `<tr class="${c?(c.k==="late"?"late":/last day/.test(c.txt)?"today":""):""}">${c?`<td class="cd ${c.k}">${esc(c.txt)}</td>`:""}<td>${esc(r.start)}</td><td>${esc(r.end)}</td><td>${esc(r.time)}</td><td>${esc(r.type)}</td><td>${esc(r.location)}</td><td>${esc(r.company)}</td><td>${esc(r.by)}</td><td>${r.phone?`<a href="tel:${esc(r.phone.replace(/\s/g,""))}">📞 ${esc(r.phone)}</a>`:""}</td><td><span class="tag ${r.hot?"hot":"no"}">${r.hot?"🔥 Hot work":"No"}</span></td><td><select class="st s-${r.st}" data-s="${r.i}">${STS.map(s=>`<option value="${s}" ${s===r.st?"selected":""}>${SI[s]} ${s}</option>`).join("")}</select></td><td><button class="x" data-d="${r.i}" title="Delete">✕</button></td></tr>`}).join(""):`<tr><td colspan="11" class="empty">No requests yet. Add one above or import a CSV.</td></tr>`;
+ $("body").innerHTML=show.length?show.map(r=>{const c=view==="ok"?cd(r):null;return `<tr class="${c?(c.k==="late"?"late":/last day/.test(c.txt)?"today":""):""}">${c?`<td class="cd ${c.k}">${esc(c.txt)}</td>`:""}<td><input class="rf${r.st==="Approved"&&!r.ref?" need":""}" data-r="${r.i}" value="${esc(r.ref)}" placeholder="L-1209"></td><td>${esc(r.start)}</td><td>${esc(r.end)}</td><td>${esc(r.time)}</td><td>${esc(r.type)}</td><td>${esc(r.location)}</td><td>${esc(r.company)}</td><td>${esc(r.by)}</td><td>${r.phone?`<a href="tel:${esc(r.phone.replace(/\s/g,""))}">📞 ${esc(r.phone)}</a>`:""}</td><td><span class="tag ${r.hot?"hot":"no"}">${r.hot?"🔥 Hot work":"No"}</span></td><td><select class="st s-${r.st}" data-s="${r.i}">${STS.map(s=>`<option value="${s}" ${s===r.st?"selected":""}>${SI[s]} ${s}</option>`).join("")}</select></td><td><button class="x" data-d="${r.i}" title="Delete">✕</button></td></tr>`}).join(""):`<tr><td colspan="11" class="empty">No requests yet. Add one above or import a CSV.</td></tr>`;
  renderAlerts();$("pinfo").textContent=`${list.length} shown · page ${page+1}/${pages}`;
  const c=s=>rows.filter(r=>stOf(r)===s).length;
  $("stats").innerHTML=[["📋","","Total",rows.length],["⏳","w","Pending",c("Pending")],["✅","g","Approved",c("Approved")],["⏰","r","Ended – to close",overdue().length],["🔥","r","Hot work (pending/approved)",rows.filter(r=>r.hot&&["Pending","Approved"].includes(stOf(r))).length]].map(s=>`<div class="stat ${s[1]}"><i>${s[0]}</i><div><b>${s[3]}</b><span>${s[2]}</span></div></div>`).join("")}
 $("body").onclick=e=>{const d=e.target.dataset?.d;if(d!==undefined&&confirm("Delete this request?")){rows.splice(+d,1);store();render()}};
-$("body").onchange=e=>{const s=e.target.dataset?.s;if(s===undefined)return;rows[+s].status=e.target.value;store();render()};
+$("body").onchange=e=>{const d=e.target.dataset;if(d?.r!==undefined){rows[+d.r].ref=e.target.value.trim().replace(/^ref\s*[:.]?\s*/i,"");store();render();return}const s=d?.s;if(s===undefined)return;rows[+s].status=e.target.value;store();render();if(e.target.value==="Approved"&&!rows[+s].ref){const el=document.querySelector(`input[data-r="${s}"]`);if(el)el.focus()}};
+function applyTheme(t){document.documentElement.dataset.theme=t;$("theme").textContent=t==="dark"?"☀️":"🌙"}
+(function(){let t="";try{t=localStorage.getItem("lw-theme")||""}catch(e){}if(!t)t=matchMedia("(prefers-color-scheme:dark)").matches?"dark":"light";applyTheme(t)})();
+$("theme").onclick=()=>{const t=document.documentElement.dataset.theme==="dark"?"light":"dark";applyTheme(t);try{localStorage.setItem("lw-theme",t)}catch(e){}};
 load();setHead();render();setInterval(renderAlerts,60000);
 </script></body></html>
