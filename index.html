@@ -38,6 +38,7 @@ select.st{font-weight:600;font-size:12px;padding:3px 6px;border-radius:99px}
 tr.late td{background:var(--hotbg)}tr.today td{background:var(--waitbg)}th{background:var(--bg)}a{color:var(--ac);text-decoration:none}
 :root[data-theme="dark"]{color-scheme:dark;--bg:#111418;--card:#1b1f25;--tx:#eceff3;--mut:#9aa3af;--bd:#2d333b;--ac:#60a5fa;--hot:#fca5a5;--hotbg:#4c1d1d;--ok:#86efac;--okbg:#14351f;--wait:#fcd34d;--waitbg:#3d2f0a}
 #theme{margin-left:auto;font-size:18px;padding:6px 10px}input.rf{width:96px;font-weight:700;padding:4px 8px}input.need{border-color:var(--wait);background:var(--waitbg)}
+.doc{display:flex;align-items:center;gap:2px;max-width:210px;white-space:nowrap}button.at{font-size:12px;padding:3px 8px;margin-top:2px}
 .pg{display:flex;gap:8px;align-items:center;justify-content:center;margin:12px 0;color:var(--mut)}
 .x{border:0;background:none;color:var(--mut);padding:2px 6px}
 .note{color:var(--mut);font-size:12px;margin:6px 0 0}
@@ -58,7 +59,7 @@ tr.late td{background:var(--hotbg)}tr.today td{background:var(--waitbg)}th{backg
 <label>Company<input id="f-co"></label>
 <label>Submitted by<input id="f-by"></label>
 <label>Phone<input id="f-ph"></label>
-<label>Ref no.<input id="f-ref" placeholder="L-xxxx"></label>
+<label>Ref no.<input id="f-ref" placeholder="L-1209"></label>
 <label>Hot work?<select id="f-hot"><option value="0">No</option><option value="1">Yes</option></select></label>
 </div>
 <button class="p" id="save">Save request</button>
@@ -72,7 +73,7 @@ tr.late td{background:var(--hotbg)}tr.today td{background:var(--waitbg)}th{backg
 <select id="fhot"><option value="">Hot work: all</option><option value="1">Hot work only</option><option value="0">No hot work</option></select>
 <select id="fst"><option value="">All status</option></select>
 <button id="imp">📥 Import CSV</button><button id="exp">📤 Export CSV</button>
-<input type="file" id="file" accept=".csv" hidden>
+<input type="file" id="file" accept=".csv" hidden><input type="file" id="dfile" multiple hidden accept=".pdf,image/*,.doc,.docx,.xls,.xlsx">
 </div>
 
 <div class="tw"><table><thead><tr id="head"></tr></thead><tbody id="body"></tbody></table></div>
@@ -138,7 +139,7 @@ $("file").onchange=e=>{const f=e.target.files[0];if(!f)return;const rd=new FileR
 $("exp").onclick=()=>{const q=v=>'"'+String(v||"").replace(/"/g,'""')+'"';
  const t="start,end,time,type,location,company,by,phone,hot,status,ref\n"+rows.map(r=>[r.start,r.end,q(r.time),q(r.type),q(r.location),q(r.company),q(r.by),q(r.phone),r.hot?"Yes":"No",stOf(r),q(r.ref)].join(",")).join("\n");
  const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([t],{type:"text/csv"}));a.download="lightwork-requests.csv";a.click()};
-const COLS=[["ref","🔖 Ref"],["start","📅 Start"],["end","🏁 End"],["time","🕓 Time"],["type","🛠️ Type of work"],["location","📍 Location"],["company","🏢 Company"],["by","👤 Submitted by"],["phone","📞 Phone"],["hot","🔥 Hot work"],["st","🏷️ Status"]];
+const COLS=[["ref","🔖 Ref"],["start","📅 Start"],["end","🏁 End"],["time","🕓 Time"],["type","🛠️ Type of work"],["location","📍 Location"],["company","🏢 Company"],["by","👤 Submitted by"],["phone","📞 Phone"],["hot","🔥 Hot work"],["st","🏷️ Status"],["docs","📎 Documents"]];
 function setHead(){$("head").innerHTML=(view==="ok"?[["start","⏱️ Countdown"]]:[]).concat(COLS).map(c=>`<th data-k="${c[0]}">${c[1]}</th>`).join("")+"<th></th>"}
 const tstr=()=>{const n=new Date();return `${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,"0")}-${String(n.getDate()).padStart(2,"0")}`};
 const overdue=()=>rows.filter(r=>stOf(r)==="Approved"&&(r.end||r.start)<tstr());
@@ -165,14 +166,26 @@ function render(){
  list.sort((a,b)=>{const x=a[sortK]??"",y=b[sortK]??"";return(x>y?1:x<y?-1:0)*sortD});
  const pages=Math.max(1,Math.ceil(list.length/PS));if(page>=pages)page=pages-1;
  const show=list.slice(page*PS,page*PS+PS);
- $("body").innerHTML=show.length?show.map(r=>{const c=view==="ok"?cd(r):null;return `<tr class="${c?(c.k==="late"?"late":/last day/.test(c.txt)?"today":""):""}">${c?`<td class="cd ${c.k}">${esc(c.txt)}</td>`:""}<td><input class="rf${r.st==="Approved"&&!r.ref?" need":""}" data-r="${r.i}" value="${esc(r.ref)}" placeholder="L-xxxx"></td><td>${esc(r.start)}</td><td>${esc(r.end)}</td><td>${esc(r.time)}</td><td>${esc(r.type)}</td><td>${esc(r.location)}</td><td>${esc(r.company)}</td><td>${esc(r.by)}</td><td>${r.phone?`<a href="tel:${esc(r.phone.replace(/\s/g,""))}">📞 ${esc(r.phone)}</a>`:""}</td><td><span class="tag ${r.hot?"hot":"no"}">${r.hot?"🔥 Hot work":"No"}</span></td><td><select class="st s-${r.st}" data-s="${r.i}">${STS.map(s=>`<option value="${s}" ${s===r.st?"selected":""}>${SI[s]} ${s}</option>`).join("")}</select></td><td><button class="x" data-d="${r.i}" title="Delete">✕</button></td></tr>`}).join(""):`<tr><td colspan="11" class="empty">No requests yet. Add one above or import a CSV.</td></tr>`;
+ $("body").innerHTML=show.length?show.map(r=>{const c=view==="ok"?cd(r):null;return `<tr class="${c?(c.k==="late"?"late":/last day/.test(c.txt)?"today":""):""}">${c?`<td class="cd ${c.k}">${esc(c.txt)}</td>`:""}<td><input class="rf${r.st==="Approved"&&!r.ref?" need":""}" data-r="${r.i}" value="${esc(r.ref)}" placeholder="L-1209"></td><td>${esc(r.start)}</td><td>${esc(r.end)}</td><td>${esc(r.time)}</td><td>${esc(r.type)}</td><td>${esc(r.location)}</td><td>${esc(r.company)}</td><td>${esc(r.by)}</td><td>${r.phone?`<a href="tel:${esc(r.phone.replace(/\s/g,""))}">📞 ${esc(r.phone)}</a>`:""}</td><td><span class="tag ${r.hot?"hot":"no"}">${r.hot?"🔥 Hot work":"No"}</span></td><td><select class="st s-${r.st}" data-s="${r.i}">${STS.map(s=>`<option value="${s}" ${s===r.st?"selected":""}>${SI[s]} ${s}</option>`).join("")}</select></td><td>${["Approved","Completed"].includes(r.st)?`${(r.docs||[]).map((d,j)=>`<div class="doc"><a href="#" data-o="${r.i}:${j}" title="${esc(d.name)}">📄 ${esc(d.name.length>18?d.name.slice(0,16)+"…":d.name)}</a><button class="x" data-xd="${r.i}:${j}" title="Remove">✕</button></div>`).join("")}<button class="at" data-a="${r.i}">📎 Attach</button>`:`<span class="note">after approval</span>`}</td><td><button class="x" data-d="${r.i}" title="Delete">✕</button></td></tr>`}).join(""):`<tr><td colspan="11" class="empty">No requests yet. Add one above or import a CSV.</td></tr>`;
  renderAlerts();$("pinfo").textContent=`${list.length} shown · page ${page+1}/${pages}`;
  const c=s=>rows.filter(r=>stOf(r)===s).length;
  $("stats").innerHTML=[["📋","","Total",rows.length],["⏳","w","Pending",c("Pending")],["✅","g","Approved",c("Approved")],["⏰","r","Ended – to close",overdue().length],["🔥","r","Hot work (pending/approved)",rows.filter(r=>r.hot&&["Pending","Approved"].includes(stOf(r))).length]].map(s=>`<div class="stat ${s[1]}"><i>${s[0]}</i><div><b>${s[3]}</b><span>${s[2]}</span></div></div>`).join("")}
-$("body").onclick=e=>{const d=e.target.dataset?.d;if(d!==undefined&&confirm("Delete this request?")){rows.splice(+d,1);store();render()}};
+$("body").onclick=e=>{const d=e.target.dataset?.d;if(d!==undefined&&confirm("Delete this request?")){(rows[+d].docs||[]).forEach(x=>delF(x.fid).catch(()=>{}));rows.splice(+d,1);store();render()}};
 $("body").onchange=e=>{const d=e.target.dataset;if(d?.r!==undefined){rows[+d.r].ref=e.target.value.trim().replace(/^ref\s*[:.]?\s*/i,"");store();render();return}const s=d?.s;if(s===undefined)return;rows[+s].status=e.target.value;store();render();if(e.target.value==="Approved"&&!rows[+s].ref){const el=document.querySelector(`input[data-r="${s}"]`);if(el)el.focus()}};
 function applyTheme(t){document.documentElement.dataset.theme=t;$("theme").textContent=t==="dark"?"☀️":"🌙"}
 (function(){let t="";try{t=localStorage.getItem("lw-theme")||""}catch(e){}if(!t)t=matchMedia("(prefers-color-scheme:dark)").matches?"dark":"light";applyTheme(t)})();
 $("theme").onclick=()=>{const t=document.documentElement.dataset.theme==="dark"?"light":"dark";applyTheme(t);try{localStorage.setItem("lw-theme",t)}catch(e){}};
+let db,attachRow=-1;
+function idb(){return new Promise((res,rej)=>{if(db)return res(db);const q=indexedDB.open("lw-files",1);q.onupgradeneeded=()=>q.result.createObjectStore("f");q.onsuccess=()=>{db=q.result;res(db)};q.onerror=()=>rej(q.error)})}
+async function putF(k,b){const d=await idb();return new Promise((res,rej)=>{const t=d.transaction("f","readwrite");t.objectStore("f").put(b,k);t.oncomplete=res;t.onerror=()=>rej(t.error)})}
+async function getF(k){const d=await idb();return new Promise((res,rej)=>{const q=d.transaction("f").objectStore("f").get(k);q.onsuccess=()=>res(q.result);q.onerror=()=>rej(q.error)})}
+async function delF(k){const d=await idb();return new Promise(res=>{const t=d.transaction("f","readwrite");t.objectStore("f").delete(k);t.oncomplete=res;t.onerror=res})}
+$("dfile").onchange=async e=>{const fs=[...e.target.files];e.target.value="";const r=rows[attachRow];if(!r)return;r.docs=r.docs||[];
+ for(const f of fs){if(f.size>25e6){alert(f.name+" is over 25 MB, skipped");continue}const fid="d"+Date.now().toString(36)+Math.random().toString(36).slice(2,6);try{await putF(fid,f);r.docs.push({fid,name:f.name,size:f.size})}catch(x){alert("Could not save "+f.name+" (browser storage blocked or full)")}}
+ store();render()};
+$("body").addEventListener("click",async e=>{const ds=e.target.dataset||{};
+ if(ds.a!==undefined){attachRow=+ds.a;$("dfile").click()}
+ if(ds.o!==undefined){e.preventDefault();const[i,j]=ds.o.split(":").map(Number),d=rows[i].docs[j];try{const b=await getF(d.fid);if(!b){alert("File not found in this browser");return}window.open(URL.createObjectURL(b),"_blank")}catch(x){alert("Could not open the file")}}
+ if(ds.xd!==undefined){const[i,j]=ds.xd.split(":").map(Number);if(confirm("Remove this document?")){const d=rows[i].docs.splice(j,1)[0];try{await delF(d.fid)}catch(x){}store();render()}}});
 load();setHead();render();setInterval(renderAlerts,60000);
 </script></body></html>
