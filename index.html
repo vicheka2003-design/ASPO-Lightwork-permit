@@ -94,7 +94,7 @@ body.live #imp,body.live button.x,body.live button.at,body.live #cancel{display:
 <p class="note">Workflow: paste the email → Read email → check fields → Copy row → paste into the next empty row of your Google Sheet. Change status/Ref directly in the sheet; the dashboard refreshes every 60 seconds. Sheet columns (row 1): start, end, time, type, location, company, by, phone, hot, status, ref, kind, dir, return.</p>
 </div>
 <script>
-const SHEET_URL="https://docs.google.com/spreadsheets/d/e/2PACX-1vTBo9a5qr1pOLvfU2LHWJjGfHH7hky_DF3tS3JhzH0y-GjlweBApVvwXeay95DjGiv2xF1Xhh2P4Lph/pub?gid=304675658&single=true&output=csv";
+const SHEET_URL="";
 const KEY="lw-requests",STS=["Pending","Approved","Rejected","Completed","Cancelled"],SI={Pending:"⏳",Approved:"✅",Rejected:"❌",Completed:"🏁",Cancelled:"🚫"};
 let rows=[],view="work",sortK="start",sortD=-1,page=0;const PS=50;
 const $=id=>document.getElementById(id);
@@ -103,7 +103,7 @@ function load(){if(LIVE){rows=[];return}try{rows=JSON.parse(localStorage.getItem
 function store(){if(LIVE)return;try{localStorage.setItem(KEY,JSON.stringify(rows))}catch(e){}}
 const stOf=r=>STS.includes(r.status)?r.status:"Pending";
 function pd(s){if(!s)return"";s=s.trim();let m=s.match(/^(\d{4})-(\d{2})-(\d{2})/);if(m)return m[0];m=s.match(/(?<!\d)(\d{1,2})[\/.\-](\d{1,2})[\/.\-](\d{2,4})/);
- if(m){let y=+m[3],a=+m[1],b=+m[2];if(y<100)y+=2000;if(b>12&&a<=12)[a,b]=[b,a];return`${y}-${String(b).padStart(2,"0")}-${String(a).padStart(2,"0")}`}
+ if(m){let y=+m[3],a=+m[1],b=+m[2];if(y<100)y+=2000;if(a>12&&b<=12)[a,b]=[b,a];return`${y}-${String(a).padStart(2,"0")}-${String(b).padStart(2,"0")}`}
  m=s.match(/(\d{4})-(\d{2})-(\d{2})/);if(m)return m[0];
  const d=new Date(s);return isNaN(d)?"":`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`}
 const isHot=v=>/^(y|yes|true|1|hot)/i.test(String(v).trim());
@@ -142,13 +142,13 @@ $("parse").onclick=()=>{const t=$("paste").value;
  const hotNo=/hot\s*work\s*[:\-–]?\s*(no|n\/a|not)/i.test(t);
  $("f-hot").value=!hotNo&&(/hot\s*work\s*[:\-–]?\s*(yes|y|required|true)/i.test(t)||/\b(weld\w*|grind\w*|gas cutting|flame cutting|torch|brazing|soldering)\b/i.test(t))?"1":"0";
  $("msg").textContent=$("f-start").value?" Check the fields (especially company and hot work), then save.":" No dates found in the email text. If they are in the attached PDF, paste the PDF text too, or type the dates."};
-const HDR=["start","end","time","type","location","company","by","phone","hot","status","ref","kind","dir","return"];
+const HDR=["Title","StartDate","EndDate","Time","Location","Company","SubmittedBy","Phone","Ref","HotWork","Kind","Dir","Return","Status"];
 async function copyText(t){try{await navigator.clipboard.writeText(t);return true}catch(e){const a=document.createElement("textarea");a.value=t;a.style.cssText="position:fixed;opacity:0";document.body.appendChild(a);a.select();let ok=false;try{ok=document.execCommand("copy")}catch(x){}a.remove();return ok}}
 $("hdrcopy").onclick=async()=>{toast(await copyText(HDR.join("\t"))?"📋 Header copied · paste into A1 of your sheet":"⚠️ Copy failed")};
-$("save").onclick=async()=>{const v=i=>$(i).value.trim(),cl=s=>String(s||"").replace(/[\t\r\n]+/g," ").trim();
+$("save").onclick=async()=>{const v=i=>$(i).value.trim(),cl=s=>{s=String(s||"").replace(/[\t\r\n]+/g," ").trim();return /^[=+\-@]/.test(s)?"'"+s:s};
  const mat=$("f-kind").value==="mat";
  if(!v("f-start")||!v("f-co")){$("msg").textContent=" Start date and company are required.";return}
- const row=[v("f-start"),v("f-end")||v("f-start"),v("f-time"),v("f-type"),v("f-loc"),v("f-co"),v("f-by"),v("f-ph"),!mat&&$("f-hot").value==="1"?"Yes":"No","Pending",v("f-ref"),mat?"material":"work",mat?$("f-dir").value:"",mat&&$("f-ret").value==="1"?"Yes":"No"].map(cl).join("\t");
+ const row=[v("f-type"),v("f-start"),v("f-end")||v("f-start"),v("f-time"),v("f-loc"),v("f-co"),v("f-by"),v("f-ph"),v("f-ref"),!mat&&$("f-hot").value==="1"?"Yes":"No",mat?"material":"work",mat?$("f-dir").value:"",mat&&$("f-ret").value==="1"?"Yes":"No","Pending"].map(cl).join("\t");
  const ok=await copyText(row);$("msg").textContent=ok?" Copied ✓ Paste into the next empty row (column A) of your Google Sheet.":" Copy failed — try again.";toast(ok?"📋 Row copied · paste into your sheet":"⚠️ Copy failed");
  return;
  const r={start:v("f-start"),end:v("f-end")||v("f-start"),time:v("f-time"),type:v("f-type"),location:v("f-loc"),company:v("f-co"),by:v("f-by"),phone:v("f-ph"),hot:$("f-kind").value==="work"&&$("f-hot").value==="1",kind:$("f-kind").value,dir:$("f-dir").value,ret:$("f-ret").value==="1",ref:v("f-ref"),status:"Pending"};
