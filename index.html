@@ -40,12 +40,16 @@ tr.late td{background:var(--hotbg)}tr.today td{background:var(--waitbg)}th{backg
 #theme{margin-left:auto;font-size:18px;padding:6px 10px}input.rf{width:96px;font-weight:700;padding:4px 8px}input.need{border-color:var(--wait);background:var(--waitbg)}
 .doc{display:flex;align-items:center;gap:2px;max-width:210px;white-space:nowrap}button.at{font-size:12px;padding:3px 8px;margin-top:2px}
 .tag.lw{background:var(--bd);color:var(--tx)}.tag.mt{background:var(--waitbg);color:var(--wait)}
+#bell+#theme{margin-left:0}
+#alerts{display:none;position:fixed;top:calc(env(safe-area-inset-top,0px) + 66px);right:16px;width:min(380px,calc(100vw - 32px));max-height:70vh;overflow:auto;z-index:20;background:var(--card);border:1px solid var(--bd);border-radius:12px;box-shadow:0 10px 32px rgba(0,0,0,.25);padding:8px}#alerts.open{display:block}
+#alerts .alert{font-size:13px;margin:0 0 6px;padding:8px 10px}#alerts .alert:last-child{margin-bottom:0}
+.toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 22px);transform:translateX(-50%);background:var(--tx);color:var(--bg);padding:10px 18px;border-radius:99px;font-weight:600;z-index:30;opacity:1;transition:opacity .6s;box-shadow:0 6px 24px rgba(0,0,0,.3);max-width:92vw;text-align:center}.toast.f{opacity:0}
 .pg{display:flex;gap:8px;align-items:center;justify-content:center;margin:12px 0;color:var(--mut)}
 .x{border:0;background:none;color:var(--mut);padding:2px 6px}
 .note{color:var(--mut);font-size:12px;margin:6px 0 0}
 .empty{padding:30px;text-align:center;color:var(--mut)}
 </style></head><body><div class="wrap">
-<div class="hd"><i>💡</i><div><h1 style="margin:0">Light Work Tracker</h1><small>Airport work permit requests · approvals · schedule</small></div><button id="theme" title="Switch light / dark">🌙</button></div><div id="alerts"></div>
+<div class="hd"><i>👷</i><div><h1 style="margin:0">Light Work Tracker</h1><small>Airport work permit requests · approvals · schedule</small></div><button id="bell" title="Notifications" style="margin-left:auto;font-size:18px;padding:6px 10px;position:relative">🔔<span id="bn" class="badge" hidden style="position:absolute;top:-6px;right:-6px;margin:0">0</span></button><button id="theme" title="Switch light / dark">🌙</button></div><div id="alerts"></div>
 <div class="stats" id="stats"></div>
 
 <details id="add"><summary>＋ Add request (paste Outlook email or fill in)</summary>
@@ -60,21 +64,21 @@ tr.late td{background:var(--hotbg)}tr.today td{background:var(--waitbg)}th{backg
 <label>Company<input id="f-co"></label>
 <label>Submitted by<input id="f-by"></label>
 <label>Phone<input id="f-ph"></label>
-<label>Request kind<select id="f-kind"><option value="work">💡 Light work</option><option value="mat">📦 Material bring in/out</option></select></label>
+<label>Request kind<select id="f-kind"><option value="work">👷 Light work</option><option value="mat">📦 Material bring in/out</option></select></label>
 <label>Direction (materials)<select id="f-dir"><option>Out</option><option>In</option></select></label>
 <label>Returns after service?<select id="f-ret"><option value="0">No</option><option value="1">Yes</option></select></label>
-<label>Ref no.<input id="f-ref" placeholder="L-XXXX"></label>
+<label>Ref no.<input id="f-ref" placeholder="L-xxxx"></label>
 <label>Hot work?<select id="f-hot"><option value="0">No</option><option value="1">Yes</option></select></label>
 </div>
-<button class="p" id="save">Save request</button>
+<button class="p" id="save">Save request</button><button id="cancel" hidden>Cancel edit</button>
 <span class="note" id="msg"></span>
 </details>
 
-<div class="tabs"><button id="tab-all" class="on">💡 Light work</button><button id="tab-mat">📦 Materials</button><button id="tab-ok">✅ Approved – work schedule</button></div>
+<div class="tabs"><button id="tab-all" class="on">👷 Light work</button><button id="tab-mat">📦 Materials</button><button id="tab-ok">✅ Approved – work schedule</button></div>
 <div class="bar">
 <input type="search" id="q" placeholder="🔍 Search company, work, location, name…">
 <select id="fco"><option value="">All companies</option></select>
-<select id="fkind" style="display:none"><option value="">All kinds</option><option value="work">💡 Light work</option><option value="mat">📦 Materials</option></select>
+<select id="fkind" style="display:none"><option value="">All kinds</option><option value="work">👷 Light work</option><option value="mat">📦 Materials</option></select>
 <select id="fhot"><option value="">Hot work: all</option><option value="1">Hot work only</option><option value="0">No hot work</option></select>
 <select id="fst"><option value="">All status</option></select>
 <button id="imp">📥 Import CSV</button><button id="exp">📤 Export CSV</button>
@@ -136,7 +140,7 @@ $("parse").onclick=()=>{const t=$("paste").value;
 $("save").onclick=()=>{const v=i=>$(i).value.trim();
  const r={start:v("f-start"),end:v("f-end")||v("f-start"),time:v("f-time"),type:v("f-type"),location:v("f-loc"),company:v("f-co"),by:v("f-by"),phone:v("f-ph"),hot:$("f-kind").value==="work"&&$("f-hot").value==="1",kind:$("f-kind").value,dir:$("f-dir").value,ret:$("f-ret").value==="1",ref:v("f-ref"),status:"Pending"};
  if(!r.start||!r.company){$("msg").textContent=" Start date and company are required.";return}
- rows.push(r);store();["paste","f-start","f-end","f-time","f-type","f-loc","f-co","f-by","f-ph","f-ref"].forEach(i=>$(i).value="");$("msg").textContent=" Saved ✓";$("f-kind").value=view==="mat"?"mat":"work";render()};
+ if(editIdx>=0){const o=rows[editIdx];r.status=stOf(o);r.docs=o.docs;rows[editIdx]=r;endEdit();$("add").open=false}else rows.push(r);store();["paste","f-start","f-end","f-time","f-type","f-loc","f-co","f-by","f-ph","f-ref"].forEach(i=>$(i).value="");$("msg").textContent=" Saved ✓";["f-hot","f-ret"].forEach(i=>$(i).value="0");$("f-dir").value="Out";toast("💾 Saved");$("f-kind").value=view==="mat"?"mat":"work";render()};
 function csvParse(t){const out=[];let row=[],c="",q=false;for(let i=0;i<t.length;i++){const ch=t[i];
  if(q){if(ch=='"'&&t[i+1]=='"'){c+='"';i++}else if(ch=='"')q=false;else c+=ch}
  else if(ch=='"')q=true;else if(ch==","){row.push(c);c=""}
@@ -161,8 +165,8 @@ const overdue=()=>rows.filter(r=>stOf(r)==="Approved"&&(r.end||r.start)<tstr());
 function renderAlerts(){const o=overdue(),e=rows.filter(r=>stOf(r)==="Approved"&&(r.end||r.start)===tstr());let h="";
  if(o.length)h+=`<div class="alert r">🚨 ${o.length} approved work${o.length>1?"s have":" has"} ended. Please close ${o.length>1?"them":"it"} (mark Completed): ${esc(o.slice(0,3).map(r=>r.company+" · "+(r.location||r.type)).join(" | "))}${o.length>3?" …":""}<button data-go="1">View</button></div>`;
  if(e.length)h+=`<div class="alert w">⏰ ${e.length} work${e.length>1?"s end":" ends"} today<button data-go="1">View</button></div>`;
- {const nr=rows.filter(r=>stOf(r)==="Approved"&&!r.ref).length;if(nr)h+=`<div class="alert w">🔖 ${nr} approved permit${nr>1?"s have":" has"} no Ref number yet<button data-go="1">View</button></div>`}$("tab-all").textContent=`💡 Light work (${rows.filter(r=>r.kind!=="mat").length})`;$("tab-mat").textContent=`📦 Materials (${rows.filter(r=>r.kind==="mat").length})`;$("alerts").innerHTML=h;$("tab-ok").innerHTML=`✅ Approved – work schedule${o.length?`<span class="badge">${o.length}</span>`:""}`;document.title=(o.length?`(${o.length}) `:"")+"Light Work Tracker"}
-$("alerts").onclick=e=>{if(e.target.dataset?.go)setView("ok")};
+ {const nr=rows.filter(r=>stOf(r)==="Approved"&&!r.ref).length;if(nr)h+=`<div class="alert w">🔖 ${nr} approved permit${nr>1?"s have":" has"} no Ref number yet<button data-go="1">View</button></div>`}$("tab-all").textContent=`👷 Light work (${rows.filter(r=>r.kind!=="mat").length})`;$("tab-mat").textContent=`📦 Materials (${rows.filter(r=>r.kind==="mat").length})`;$("alerts").innerHTML=h||'<div class="note" style="padding:12px;text-align:center">🎉 No notifications</div>';{const n=(h.match(/class="alert/g)||[]).length;$("bn").hidden=!n;$("bn").textContent=n}$("tab-ok").innerHTML=`✅ Approved – work schedule${o.length?`<span class="badge">${o.length}</span>`:""}`;document.title=(o.length?`(${o.length}) `:"")+"Light Work Tracker"}
+$("alerts").onclick=e=>{if(e.target.dataset?.go){setView("ok");$("alerts").classList.remove("open")}};
 function setView(v){view=v;sortK="start";sortD=v==="ok"?1:-1;page=0;$("tab-all").classList.toggle("on",v==="work");$("tab-mat").classList.toggle("on",v==="mat");$("tab-ok").classList.toggle("on",v==="ok");$("fkind").style.display=v==="ok"?"":"none";if(v!=="ok")$("f-kind").value=v;setHead();render()}
 $("tab-all").onclick=()=>setView("work");$("tab-mat").onclick=()=>setView("mat");$("tab-ok").onclick=()=>setView("ok");
 function cd(r){const D=864e5,n=new Date(),t0=Date.UTC(n.getFullYear(),n.getMonth(),n.getDate()),p=s=>{const[a,b,c]=s.split("-");return Date.UTC(+a,b-1,+c)};const s=p(r.start),e=p(r.end||r.start);
@@ -181,12 +185,21 @@ function render(){
  list.sort((a,b)=>{const x=a[sortK]??"",y=b[sortK]??"";return(x>y?1:x<y?-1:0)*sortD});
  const pages=Math.max(1,Math.ceil(list.length/PS));if(page>=pages)page=pages-1;
  const show=list.slice(page*PS,page*PS+PS);
- $("body").innerHTML=show.length?show.map(r=>{const c=view==="ok"?cd(r):null;return `<tr class="${c?(c.k==="late"?"late":/last day/.test(c.txt)?"today":""):""}">${c?`<td class="cd ${c.k}">${esc(c.txt)}</td>`:""}<td><input class="rf${r.st==="Approved"&&!r.ref?" need":""}" data-r="${r.i}" value="${esc(r.ref)}" placeholder="L-XXXX"></td>${view!=="work"?`<td><span class="tag ${r.kind==="mat"?"mt":"lw"}">${r.kind==="mat"?"📦 Material "+(r.dir||"")+(r.ret?" ↩":""):"💡 Light work"}</span></td>`:""}<td>${esc(r.start)}</td><td>${esc(r.end)}</td><td>${esc(r.time)}</td><td>${esc(r.type)}</td><td>${esc(r.location)}</td><td>${esc(r.company)}</td><td>${esc(r.by)}</td><td>${r.phone?`<a href="tel:${esc(r.phone.replace(/\s/g,""))}">📞 ${esc(r.phone)}</a>`:""}</td>${view==="mat"?"":`<td>${r.kind==="mat"?"—":`<span class="tag ${r.hot?"hot":"no"}">${r.hot?"🔥 Hot work":"No"}</span>`}</td>`}<td><select class="st s-${r.st}" data-s="${r.i}">${STS.map(s=>`<option value="${s}" ${s===r.st?"selected":""}>${SI[s]} ${s}</option>`).join("")}</select></td><td>${["Approved","Completed"].includes(r.st)?`${(r.docs||[]).map((d,j)=>`<div class="doc"><a href="#" data-o="${r.i}:${j}" title="${esc(d.name)}">📄 ${esc(d.name.length>18?d.name.slice(0,16)+"…":d.name)}</a><button class="x" data-xd="${r.i}:${j}" title="Remove">✕</button></div>`).join("")}<button class="at" data-a="${r.i}">📎 Attach</button>`:`<span class="note">after approval</span>`}</td><td><button class="x" data-d="${r.i}" title="Delete">✕</button></td></tr>`}).join(""):`<tr><td colspan="11" class="empty">No requests yet. Add one above or import a CSV.</td></tr>`;
+ $("body").innerHTML=show.length?show.map(r=>{const c=view==="ok"?cd(r):null;return `<tr class="${c?(c.k==="late"?"late":/last day/.test(c.txt)?"today":""):""}">${c?`<td class="cd ${c.k}">${esc(c.txt)}</td>`:""}<td><input class="rf${r.st==="Approved"&&!r.ref?" need":""}" data-r="${r.i}" value="${esc(r.ref)}" placeholder="L-xxxx"></td>${view!=="work"?`<td><span class="tag ${r.kind==="mat"?"mt":"lw"}">${r.kind==="mat"?"📦 Material "+(r.dir||"")+(r.ret?" ↩":""):"👷 Light work"}</span></td>`:""}<td>${esc(r.start)}</td><td>${esc(r.end)}</td><td>${esc(r.time)}</td><td>${esc(r.type)}</td><td>${esc(r.location)}</td><td>${esc(r.company)}</td><td>${esc(r.by)}</td><td>${r.phone?`<a href="tel:${esc(r.phone.replace(/\s/g,""))}">📞 ${esc(r.phone)}</a>`:""}</td>${view==="mat"?"":`<td>${r.kind==="mat"?"—":`<span class="tag ${r.hot?"hot":"no"}">${r.hot?"🔥 Hot work":"No"}</span>`}</td>`}<td><select class="st s-${r.st}" data-s="${r.i}">${STS.map(s=>`<option value="${s}" ${s===r.st?"selected":""}>${SI[s]} ${s}</option>`).join("")}</select></td><td>${["Approved","Completed"].includes(r.st)?`${(r.docs||[]).map((d,j)=>`<div class="doc"><a href="#" data-o="${r.i}:${j}" title="${esc(d.name)}">📄 ${esc(d.name.length>18?d.name.slice(0,16)+"…":d.name)}</a><button class="x" data-xd="${r.i}:${j}" title="Remove">✕</button></div>`).join("")}<button class="at" data-a="${r.i}">📎 Attach</button>`:`<span class="note">after approval</span>`}</td><td><button class="x" data-e="${r.i}" title="Edit">✏️</button><button class="x" data-d="${r.i}" title="Delete">✕</button></td></tr>`}).join(""):`<tr><td colspan="11" class="empty">No requests yet. Add one above or import a CSV.</td></tr>`;
  renderAlerts();$("pinfo").textContent=`${list.length} shown · page ${page+1}/${pages}`;
  const vr=view==="ok"?rows:rows.filter(r=>(r.kind==="mat")===(view==="mat")),c=s=>vr.filter(r=>stOf(r)===s).length;
  $("stats").innerHTML=[["📋","","Total",vr.length],["⏳","w","Pending",c("Pending")],["✅","g","Approved",c("Approved")],["⏰","r","Ended – to close",overdue().length],["🔥","r","Hot work (pending/approved)",rows.filter(r=>r.hot&&["Pending","Approved"].includes(stOf(r))).length]].map(s=>`<div class="stat ${s[1]}"><i>${s[0]}</i><div><b>${s[3]}</b><span>${s[2]}</span></div></div>`).join("")}
 $("body").onclick=e=>{const d=e.target.dataset?.d;if(d!==undefined&&confirm("Delete this request?")){(rows[+d].docs||[]).forEach(x=>delF(x.fid).catch(()=>{}));rows.splice(+d,1);store();render()}};
-$("body").onchange=e=>{const d=e.target.dataset;if(d?.r!==undefined){rows[+d.r].ref=e.target.value.trim().replace(/^ref\s*[:.]?\s*/i,"");store();render();return}const s=d?.s;if(s===undefined)return;rows[+s].status=e.target.value;store();render();if(e.target.value==="Approved"&&!rows[+s].ref){const el=document.querySelector(`input[data-r="${s}"]`);if(el)el.focus()}};
+$("body").onchange=e=>{const d=e.target.dataset;if(d?.r!==undefined){rows[+d.r].ref=e.target.value.trim().replace(/^ref\s*[:.]?\s*/i,"");store();render();return}const s=d?.s;if(s===undefined)return;rows[+s].status=e.target.value;store();render();toast(`${SI[e.target.value]} ${rows[+s].company||"Request"} → ${e.target.value}${e.target.value==="Approved"&&!rows[+s].ref?" · add the Ref no.":""}`);if(e.target.value==="Approved"&&!rows[+s].ref){const el=document.querySelector(`input[data-r="${s}"]`);if(el)el.focus()}};
+function toast(m){document.querySelectorAll(".toast").forEach(x=>x.remove());const d=document.createElement("div");d.className="toast";d.textContent=m;document.body.appendChild(d);setTimeout(()=>d.classList.add("f"),3200);setTimeout(()=>d.remove(),3900)}
+$("bell").onclick=e=>{e.stopPropagation();$("alerts").classList.toggle("open")};
+document.addEventListener("click",e=>{if(!e.target.closest("#alerts,#bell"))$("alerts").classList.remove("open")});
+let editIdx=-1;
+function endEdit(){editIdx=-1;$("save").textContent="Save request";$("cancel").hidden=true;$("add").querySelector("summary").textContent="＋ Add request (paste Outlook email or fill in)"}
+$("cancel").onclick=()=>{endEdit();["paste","f-start","f-end","f-time","f-type","f-loc","f-co","f-by","f-ph","f-ref"].forEach(i=>$(i).value="");$("msg").textContent=""};
+$("body").addEventListener("click",e=>{const k=e.target.dataset?.e;if(k===undefined)return;const r=rows[+k];if(!r)return;editIdx=+k;
+ const set=(i,v)=>$(i).value=v??"";set("f-start",r.start);set("f-end",r.end);set("f-time",r.time);set("f-type",r.type);set("f-loc",r.location);set("f-co",r.company);set("f-by",r.by);set("f-ph",r.phone);set("f-ref",r.ref);set("f-hot",r.hot?"1":"0");set("f-kind",r.kind==="mat"?"mat":"work");set("f-dir",r.dir||"Out");set("f-ret",r.ret?"1":"0");
+ $("add").open=true;$("save").textContent="💾 Save changes";$("cancel").hidden=false;$("add").querySelector("summary").textContent="✏️ Editing request";$("msg").textContent="";$("add").scrollIntoView({behavior:"smooth"})});
 function applyTheme(t){document.documentElement.dataset.theme=t;$("theme").textContent=t==="dark"?"☀️":"🌙"}
 (function(){let t="";try{t=localStorage.getItem("lw-theme")||""}catch(e){}if(!t)t=matchMedia("(prefers-color-scheme:dark)").matches?"dark":"light";applyTheme(t)})();
 $("theme").onclick=()=>{const t=document.documentElement.dataset.theme==="dark"?"light":"dark";applyTheme(t);try{localStorage.setItem("lw-theme",t)}catch(e){}};
