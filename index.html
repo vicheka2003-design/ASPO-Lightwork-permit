@@ -46,7 +46,7 @@ tr.late td{background:var(--hotbg)}tr.today td{background:var(--waitbg)}th{backg
 #alerts .alert{font-size:13px;margin:0 0 6px;padding:8px 10px}#alerts .alert:last-child{margin-bottom:0}
 .toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 22px);transform:translateX(-50%);background:var(--tx);color:var(--bg);padding:10px 18px;border-radius:99px;font-weight:600;z-index:30;opacity:1;transition:opacity .6s;box-shadow:0 6px 24px rgba(0,0,0,.3);max-width:92vw;text-align:center}.toast.f{opacity:0}
 #bn{transition:opacity .6s,transform .6s}#bn.gone{opacity:0;transform:scale(.3);pointer-events:none}
-body.live details#add,body.live #imp,body.live button.x,body.live button.at,body.live #cancel{display:none}body.live select.st,body.live input.rf{pointer-events:none;border-color:transparent;background-image:none}
+body.live #imp,body.live button.x,body.live button.at,body.live #cancel{display:none}body.live select.st,body.live input.rf{pointer-events:none;border-color:transparent;background-image:none}
 .pg{display:flex;gap:8px;align-items:center;justify-content:center;margin:12px 0;color:var(--mut)}
 .x{border:0;background:none;color:var(--mut);padding:2px 6px}
 .note{color:var(--mut);font-size:12px;margin:6px 0 0}
@@ -73,7 +73,7 @@ body.live details#add,body.live #imp,body.live button.x,body.live button.at,body
 <label>Ref no.<input id="f-ref" placeholder="L-xxxx"></label>
 <label>Hot work?<select id="f-hot"><option value="0">No</option><option value="1">Yes</option></select></label>
 </div>
-<button class="p" id="save">Save request</button><button id="cancel" hidden>Cancel edit</button>
+<button class="p" id="save">📋 Copy row for Google Sheet</button><button id="hdrcopy" title="Only needed once, for row 1 of your sheet">📋 Copy header row</button><button id="cancel" hidden>Cancel edit</button>
 <span class="note" id="msg"></span>
 </details>
 
@@ -91,7 +91,7 @@ body.live details#add,body.live #imp,body.live button.x,body.live button.at,body
 <div class="tw"><table><thead><tr id="head"></tr></thead><tbody id="body"></tbody></table></div>
 <div class="pg"><button id="prev">‹</button><span id="pinfo"></span><button id="next">›</button></div>
 <p class="note">🔗 Google Sheet link (live view): <input id="sheetUrl" size="42" placeholder="https://docs.google.com/spreadsheets/d/e/…/pub?output=csv"> <button id="sheetGo">Connect</button> <button id="sheetOff">Disconnect</button></p>
-<p class="note">To change a status, use the dropdown in the Status column of that row. Data is saved in this browser only, so use Export CSV to back up. CSV columns: start, end, time, type, location, company, by, phone, hot, status, ref, kind, dir, return.</p>
+<p class="note">Workflow: paste the email → Read email → check fields → Copy row → paste into the next empty row of your Google Sheet. Change status/Ref directly in the sheet; the dashboard refreshes every 60 seconds. Sheet columns (row 1): start, end, time, type, location, company, by, phone, hot, status, ref, kind, dir, return.</p>
 </div>
 <script>
 const SHEET_URL="";
@@ -142,7 +142,15 @@ $("parse").onclick=()=>{const t=$("paste").value;
  const hotNo=/hot\s*work\s*[:\-–]?\s*(no|n\/a|not)/i.test(t);
  $("f-hot").value=!hotNo&&(/hot\s*work\s*[:\-–]?\s*(yes|y|required|true)/i.test(t)||/\b(weld\w*|grind\w*|gas cutting|flame cutting|torch|brazing|soldering)\b/i.test(t))?"1":"0";
  $("msg").textContent=$("f-start").value?" Check the fields (especially company and hot work), then save.":" No dates found in the email text. If they are in the attached PDF, paste the PDF text too, or type the dates."};
-$("save").onclick=()=>{const v=i=>$(i).value.trim();
+const HDR=["start","end","time","type","location","company","by","phone","hot","status","ref","kind","dir","return"];
+async function copyText(t){try{await navigator.clipboard.writeText(t);return true}catch(e){const a=document.createElement("textarea");a.value=t;a.style.cssText="position:fixed;opacity:0";document.body.appendChild(a);a.select();let ok=false;try{ok=document.execCommand("copy")}catch(x){}a.remove();return ok}}
+$("hdrcopy").onclick=async()=>{toast(await copyText(HDR.join("\t"))?"📋 Header copied · paste into A1 of your sheet":"⚠️ Copy failed")};
+$("save").onclick=async()=>{const v=i=>$(i).value.trim(),cl=s=>String(s||"").replace(/[\t\r\n]+/g," ").trim();
+ const mat=$("f-kind").value==="mat";
+ if(!v("f-start")||!v("f-co")){$("msg").textContent=" Start date and company are required.";return}
+ const row=[v("f-start"),v("f-end")||v("f-start"),v("f-time"),v("f-type"),v("f-loc"),v("f-co"),v("f-by"),v("f-ph"),!mat&&$("f-hot").value==="1"?"Yes":"No","Pending",v("f-ref"),mat?"material":"work",mat?$("f-dir").value:"",mat&&$("f-ret").value==="1"?"Yes":"No"].map(cl).join("\t");
+ const ok=await copyText(row);$("msg").textContent=ok?" Copied ✓ Paste into the next empty row (column A) of your Google Sheet.":" Copy failed — try again.";toast(ok?"📋 Row copied · paste into your sheet":"⚠️ Copy failed");
+ return;
  const r={start:v("f-start"),end:v("f-end")||v("f-start"),time:v("f-time"),type:v("f-type"),location:v("f-loc"),company:v("f-co"),by:v("f-by"),phone:v("f-ph"),hot:$("f-kind").value==="work"&&$("f-hot").value==="1",kind:$("f-kind").value,dir:$("f-dir").value,ret:$("f-ret").value==="1",ref:v("f-ref"),status:"Pending"};
  if(!r.start||!r.company){$("msg").textContent=" Start date and company are required.";return}
  if(editIdx>=0){const o=rows[editIdx];r.status=stOf(o);r.docs=o.docs;rows[editIdx]=r;endEdit();$("add").open=false}else rows.push(r);store();["paste","f-start","f-end","f-time","f-type","f-loc","f-co","f-by","f-ph","f-ref"].forEach(i=>$(i).value="");$("msg").textContent=" Saved ✓";["f-hot","f-ret"].forEach(i=>$(i).value="0");$("f-dir").value="Out";toast("💾 Saved");$("f-kind").value=view==="mat"?"mat":"work";render()};
