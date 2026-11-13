@@ -94,7 +94,7 @@ body.live #imp,body.live button.x,body.live button.at,body.live #cancel{display:
 <p class="note">Workflow: paste the email → Read email → check fields → Copy row → paste into the next empty row of your Google Sheet. Change status/Ref directly in the sheet; the dashboard refreshes every 60 seconds. Sheet columns (row 1): start, end, time, type, location, company, by, phone, hot, status, ref, kind, dir, return.</p>
 </div>
 <script>
-const SHEET_URL="";
+const SHEET_URL="https://docs.google.com/spreadsheets/d/e/2PACX-1vTBo9a5qr1pOLvfU2LHWJjGfHH7hky_DF3tS3JhzH0y-GjlweBApVvwXeay95DjGiv2xF1Xhh2P4Lph/pub?gid=304675658&single=true&output=csv";
 const KEY="lw-requests",STS=["Pending","Approved","Rejected","Completed","Cancelled"],SI={Pending:"⏳",Approved:"✅",Rejected:"❌",Completed:"🏁",Cancelled:"🚫"};
 let rows=[],view="work",sortK="start",sortD=-1,page=0;const PS=50;
 const $=id=>document.getElementById(id);
