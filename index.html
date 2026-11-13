@@ -2,6 +2,7 @@
 <html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Light Work Request Tracker</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%27.9em%27 font-size=%2790%27%3E👷%3C/text%3E%3C/svg%3E">
 <style>
 :root{--bg:#f6f7f9;--card:#fff;--tx:#1a1d21;--mut:#6b7280;--bd:#e3e6ea;--ac:#2563eb;--hot:#dc2626;--hotbg:#fee2e2;--ok:#16a34a;--okbg:#dcfce7;--wait:#b45309;--waitbg:#fef3c7;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;--bg:#111418;--card:#1b1f25;--tx:#eceff3;--mut:#9aa3af;--bd:#2d333b;--ac:#60a5fa;--hot:#fca5a5;--hotbg:#4c1d1d;--ok:#86efac;--okbg:#14351f;--wait:#fcd34d;--waitbg:#3d2f0a}}
@@ -44,6 +45,7 @@ tr.late td{background:var(--hotbg)}tr.today td{background:var(--waitbg)}th{backg
 #alerts{display:none;position:fixed;top:calc(env(safe-area-inset-top,0px) + 66px);right:16px;width:min(380px,calc(100vw - 32px));max-height:70vh;overflow:auto;z-index:20;background:var(--card);border:1px solid var(--bd);border-radius:12px;box-shadow:0 10px 32px rgba(0,0,0,.25);padding:8px}#alerts.open{display:block}
 #alerts .alert{font-size:13px;margin:0 0 6px;padding:8px 10px}#alerts .alert:last-child{margin-bottom:0}
 .toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 22px);transform:translateX(-50%);background:var(--tx);color:var(--bg);padding:10px 18px;border-radius:99px;font-weight:600;z-index:30;opacity:1;transition:opacity .6s;box-shadow:0 6px 24px rgba(0,0,0,.3);max-width:92vw;text-align:center}.toast.f{opacity:0}
+#bn{transition:opacity .6s,transform .6s}#bn.gone{opacity:0;transform:scale(.3);pointer-events:none}
 .pg{display:flex;gap:8px;align-items:center;justify-content:center;margin:12px 0;color:var(--mut)}
 .x{border:0;background:none;color:var(--mut);padding:2px 6px}
 .note{color:var(--mut);font-size:12px;margin:6px 0 0}
@@ -165,7 +167,7 @@ const overdue=()=>rows.filter(r=>stOf(r)==="Approved"&&(r.end||r.start)<tstr());
 function renderAlerts(){const o=overdue(),e=rows.filter(r=>stOf(r)==="Approved"&&(r.end||r.start)===tstr());let h="";
  if(o.length)h+=`<div class="alert r">🚨 ${o.length} approved work${o.length>1?"s have":" has"} ended. Please close ${o.length>1?"them":"it"} (mark Completed): ${esc(o.slice(0,3).map(r=>r.company+" · "+(r.location||r.type)).join(" | "))}${o.length>3?" …":""}<button data-go="1">View</button></div>`;
  if(e.length)h+=`<div class="alert w">⏰ ${e.length} work${e.length>1?"s end":" ends"} today<button data-go="1">View</button></div>`;
- {const nr=rows.filter(r=>stOf(r)==="Approved"&&!r.ref).length;if(nr)h+=`<div class="alert w">🔖 ${nr} approved permit${nr>1?"s have":" has"} no Ref number yet<button data-go="1">View</button></div>`}$("tab-all").textContent=`👷 Light work (${rows.filter(r=>r.kind!=="mat").length})`;$("tab-mat").textContent=`📦 Materials (${rows.filter(r=>r.kind==="mat").length})`;$("alerts").innerHTML=h||'<div class="note" style="padding:12px;text-align:center">🎉 No notifications</div>';{const n=(h.match(/class="alert/g)||[]).length;$("bn").hidden=!n;$("bn").textContent=n}$("tab-ok").innerHTML=`✅ Approved – work schedule${o.length?`<span class="badge">${o.length}</span>`:""}`;document.title=(o.length?`(${o.length}) `:"")+"Light Work Tracker"}
+ {const nr=rows.filter(r=>stOf(r)==="Approved"&&!r.ref).length;if(nr)h+=`<div class="alert w">🔖 ${nr} approved permit${nr>1?"s have":" has"} no Ref number yet<button data-go="1">View</button></div>`}$("tab-all").textContent=`👷 Light work (${rows.filter(r=>r.kind!=="mat").length})`;$("tab-mat").textContent=`📦 Materials (${rows.filter(r=>r.kind==="mat").length})`;$("alerts").innerHTML=h||'<div class="note" style="padding:12px;text-align:center">🎉 No notifications</div>';{const n=(h.match(/class="alert/g)||[]).length;let seen="";try{seen=localStorage.getItem("lw-seen")||""}catch(e){}$("alerts").dataset.sig=h;$("bn").hidden=!n;$("bn").textContent=n;$("bn").classList.toggle("gone",!n||h===seen)}$("tab-ok").innerHTML=`✅ Approved – work schedule${o.length?`<span class="badge">${o.length}</span>`:""}`;document.title=(o.length?`(${o.length}) `:"")+"Light Work Tracker"}
 $("alerts").onclick=e=>{if(e.target.dataset?.go){setView("ok");$("alerts").classList.remove("open")}};
 function setView(v){view=v;sortK="start";sortD=v==="ok"?1:-1;page=0;$("tab-all").classList.toggle("on",v==="work");$("tab-mat").classList.toggle("on",v==="mat");$("tab-ok").classList.toggle("on",v==="ok");$("fkind").style.display=v==="ok"?"":"none";if(v!=="ok")$("f-kind").value=v;setHead();render()}
 $("tab-all").onclick=()=>setView("work");$("tab-mat").onclick=()=>setView("mat");$("tab-ok").onclick=()=>setView("ok");
@@ -192,7 +194,7 @@ function render(){
 $("body").onclick=e=>{const d=e.target.dataset?.d;if(d!==undefined&&confirm("Delete this request?")){(rows[+d].docs||[]).forEach(x=>delF(x.fid).catch(()=>{}));rows.splice(+d,1);store();render()}};
 $("body").onchange=e=>{const d=e.target.dataset;if(d?.r!==undefined){rows[+d.r].ref=e.target.value.trim().replace(/^ref\s*[:.]?\s*/i,"");store();render();return}const s=d?.s;if(s===undefined)return;rows[+s].status=e.target.value;store();render();toast(`${SI[e.target.value]} ${rows[+s].company||"Request"} → ${e.target.value}${e.target.value==="Approved"&&!rows[+s].ref?" · add the Ref no.":""}`);if(e.target.value==="Approved"&&!rows[+s].ref){const el=document.querySelector(`input[data-r="${s}"]`);if(el)el.focus()}};
 function toast(m){document.querySelectorAll(".toast").forEach(x=>x.remove());const d=document.createElement("div");d.className="toast";d.textContent=m;document.body.appendChild(d);setTimeout(()=>d.classList.add("f"),3200);setTimeout(()=>d.remove(),3900)}
-$("bell").onclick=e=>{e.stopPropagation();$("alerts").classList.toggle("open")};
+$("bell").onclick=e=>{e.stopPropagation();const o=$("alerts").classList.toggle("open");if(o){try{localStorage.setItem("lw-seen",$("alerts").dataset.sig||"")}catch(x){}$("bn").classList.add("gone")}};
 document.addEventListener("click",e=>{if(!e.target.closest("#alerts,#bell"))$("alerts").classList.remove("open")});
 let editIdx=-1;
 function endEdit(){editIdx=-1;$("save").textContent="Save request";$("cancel").hidden=true;$("add").querySelector("summary").textContent="＋ Add request (paste Outlook email or fill in)"}
