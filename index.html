@@ -51,7 +51,9 @@ body.live #imp,body.live button.x,body.live button.at,body.live #cancel{display:
 .x{border:0;background:none;color:var(--mut);padding:2px 6px}
 .note{color:var(--mut);font-size:12px;margin:6px 0 0}
 .empty{padding:30px;text-align:center;color:var(--mut)}
-</style></head><body><div class="wrap">
+#ld{position:fixed;inset:0;z-index:100;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;transition:opacity .45s}#ld.done{opacity:0;pointer-events:none}#ld b{font-size:18px}#ld span{color:var(--mut);font-size:13px}
+.sp{width:44px;height:44px;border:4px solid var(--bd);border-top-color:var(--ac);border-radius:50%;animation:sp .8s linear infinite}@keyframes sp{to{transform:rotate(360deg)}}
+</style></head><body><div id="ld"><div class="sp"></div><b>Connecting to data…</b><span>Loading your Google Sheet</span></div><div class="wrap">
 <div class="hd"><i>👷</i><div><h1 style="margin:0">Light Work Tracker</h1><small>Airport work permit requests · approvals · schedule</small></div><button id="bell" title="Notifications" style="margin-left:auto;font-size:18px;padding:6px 10px;position:relative">🔔<span id="bn" class="badge" hidden style="position:absolute;top:-6px;right:-6px;margin:0">0</span></button><button id="theme" title="Switch light / dark">🌙</button></div><div id="alerts"></div>
 <div class="stats" id="stats"></div>
 
@@ -90,11 +92,10 @@ body.live #imp,body.live button.x,body.live button.at,body.live #cancel{display:
 
 <div class="tw"><table><thead><tr id="head"></tr></thead><tbody id="body"></tbody></table></div>
 <div class="pg"><button id="prev">‹</button><span id="pinfo"></span><button id="next">›</button></div>
-<p class="note">🔗 Google Sheet link (live view): <input id="sheetUrl" size="42" placeholder="https://docs.google.com/spreadsheets/d/e/…/pub?output=csv"> <button id="sheetGo">Connect</button> <button id="sheetOff">Disconnect</button></p>
 <p class="note">Workflow: paste the email → Read email → check fields → Copy row → paste into the next empty row of your Google Sheet. Change status/Ref directly in the sheet; the dashboard refreshes every 60 seconds. Sheet columns (row 1): start, end, time, type, location, company, by, phone, hot, status, ref, kind, dir, return.</p>
 </div>
 <script>
-const SHEET_URL="";
+const SHEET_URL="https://docs.google.com/spreadsheets/d/e/2PACX-1vTBo9a5qr1pOLvfU2LHWJjGfHH7hky_DF3tS3JhzH0y-GjlweBApVvwXeay95DjGiv2xF1Xhh2P4Lph/pub?gid=304675658&single=true&output=csv";
 const KEY="lw-requests",STS=["Pending","Approved","Rejected","Completed","Cancelled"],SI={Pending:"⏳",Approved:"✅",Rejected:"❌",Completed:"🏁",Cancelled:"🚫"};
 let rows=[],view="work",sortK="start",sortD=-1,page=0;const PS=50;
 const $=id=>document.getElementById(id);
@@ -213,17 +214,16 @@ $("cancel").onclick=()=>{endEdit();["paste","f-start","f-end","f-time","f-type",
 $("body").addEventListener("click",e=>{const k=e.target.dataset?.e;if(k===undefined)return;const r=rows[+k];if(!r)return;editIdx=+k;
  const set=(i,v)=>$(i).value=v??"";set("f-start",r.start);set("f-end",r.end);set("f-time",r.time);set("f-type",r.type);set("f-loc",r.location);set("f-co",r.company);set("f-by",r.by);set("f-ph",r.phone);set("f-ref",r.ref);set("f-hot",r.hot?"1":"0");set("f-kind",r.kind==="mat"?"mat":"work");set("f-dir",r.dir||"Out");set("f-ret",r.ret?"1":"0");
  $("add").open=true;$("save").textContent="💾 Save changes";$("cancel").hidden=false;$("add").querySelector("summary").textContent="✏️ Editing request";$("msg").textContent="";$("add").scrollIntoView({behavior:"smooth"})});
-const SU=SHEET_URL||(()=>{try{return localStorage.getItem("lw-sheet")||""}catch(e){return""}})(),LIVE=!!SU;
-$("sheetUrl").value=SU;
-$("sheetGo").onclick=()=>{const u=$("sheetUrl").value.trim();if(!/^https:\/\/docs\.google\.com\//.test(u)){alert("Paste the Google Sheet link ending in output=csv");return}try{localStorage.setItem("lw-sheet",u)}catch(e){}location.reload()};
-$("sheetOff").onclick=()=>{try{localStorage.removeItem("lw-sheet")}catch(e){}location.reload()};
-async function loadSheet(){try{const resp=await fetch(SU+(SU.includes("?")?"&":"?")+"_="+Date.now());if(!resp.ok)throw 0;const t=csvParse(await resp.text());if(t.length<2)throw 0;
+const SU=SHEET_URL,LIVE=!!SU;
+let busy=false;
+async function loadSheet(){if(busy)return;busy=true;try{const resp=await fetch(SU+(SU.includes("?")?"&":"?")+"_="+Date.now(),{cache:"no-store"});if(!resp.ok)throw 0;const t=csvParse(await resp.text());if(t.length<2)throw 0;
  const h=t[0].map(x=>x.trim().toLowerCase()),ix=re=>h.findIndex(x=>re.test(x));
  const I={a:ix(/start|from/),b:ix(/^end|until/),tm:ix(/time/),c:ix(/type|desc|title/),l:ix(/loc/),d:ix(/company|contractor/),by:ix(/^by$|submit|requester|name/),p:ix(/phone|tel/),e:ix(/hot/),s:ix(/status/),rf:ix(/^ref/),k:ix(/^kind/),dr:ix(/^dir/),rt:ix(/^return/)};
  const g=(r,k)=>(I[k]>=0?(r[I[k]]||""):"").trim();
  rows=t.slice(1).map(r=>{const s=pd(g(r,"a"));if(!s)return null;return{start:s,end:pd(g(r,"b"))||s,time:g(r,"tm"),type:g(r,"c"),location:g(r,"l"),company:g(r,"d"),by:g(r,"by"),phone:g(r,"p"),hot:isHot(g(r,"e")),status:STS.find(x=>x.toLowerCase()===g(r,"s").toLowerCase())||"Pending",ref:g(r,"rf"),kind:/mat/i.test(g(r,"k"))?"mat":"work",dir:g(r,"dr"),ret:isHot(g(r,"rt"))}}).filter(Boolean);
  $("live").textContent="🟢 Live · updated "+new Date().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"});render()}
- catch(e){$("live").textContent="⚠️ Couldn’t load the sheet. Check the link and that it is published as CSV."}}
+ catch(e){$("live").textContent="⚠️ Couldn’t load the sheet. Retrying…"}
+ finally{busy=false;const l=$("ld");if(l){l.classList.add("done");setTimeout(()=>l.remove(),500)}}}
 function applyTheme(t){document.documentElement.dataset.theme=t;$("theme").textContent=t==="dark"?"☀️":"🌙"}
 (function(){let t="";try{t=localStorage.getItem("lw-theme")||""}catch(e){}if(!t)t=matchMedia("(prefers-color-scheme:dark)").matches?"dark":"light";applyTheme(t)})();
 $("theme").onclick=()=>{const t=document.documentElement.dataset.theme==="dark"?"light":"dark";applyTheme(t);try{localStorage.setItem("lw-theme",t)}catch(e){}};
@@ -240,5 +240,5 @@ $("body").addEventListener("click",async e=>{const ds=e.target.dataset||{};
  if(ds.o!==undefined){e.preventDefault();const[i,j]=ds.o.split(":").map(Number),d=rows[i].docs[j];try{const b=await getF(d.fid);if(!b){alert("File not found in this browser");return}window.open(URL.createObjectURL(b),"_blank")}catch(x){alert("Could not open the file")}}
  if(ds.xd!==undefined){const[i,j]=ds.xd.split(":").map(Number);if(confirm("Remove this document?")){const d=rows[i].docs.splice(j,1)[0];try{await delF(d.fid)}catch(x){}store();render()}}});
 load();setHead();render();setInterval(renderAlerts,60000);
-if(LIVE){document.body.classList.add("live");loadSheet();setInterval(loadSheet,60000)}
+if(LIVE){document.body.classList.add("live");loadSheet();setInterval(loadSheet,15000);document.addEventListener("visibilitychange",()=>{if(!document.hidden)loadSheet()});window.addEventListener("focus",loadSheet)}
 </script></body></html>
