@@ -96,7 +96,7 @@ tr.grp td{background:var(--bg);font-weight:700;font-size:12px;letter-spacing:.02
 <p class="note">✏️ Click any cell to edit it — changes save to your Google Sheet automatically. Change <b>Status</b> and the row moves to its status group. Change <b>Category</b> to move it between the Light Work and Materials sheets. Edits made directly in the sheet appear here within about 15 seconds.</p>
 </div>
 <script>
-const APP_URL="";
+const APP_URL="https://script.google.com/macros/s/AKfycbzNKrAvhouPM0TAvF_0I1o9HukVViEqKRpb85iusBgo4h1d3fjmYzO2IGBy24b7iRsH/exec";
 const STS=["Pending","Approved","Rejected","Completed","Cancelled"],GO=["Pending","Approved","Completed","Rejected","Cancelled"],SI={Pending:"⏳",Approved:"✅",Rejected:"❌",Completed:"🏁",Cancelled:"🚫"};
 let rows=[],view="work",sortK="start",sortD=-1,page=0,pending=0,busy=false,lastSig="";const PS=50;
 const $=id=>document.getElementById(id);
