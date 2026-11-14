@@ -53,6 +53,7 @@ tr.late td{background:var(--hotbg)}tr.today td{background:var(--waitbg)}th{backg
 .ed:hover{border-color:var(--bd)}.ed:focus{border-color:var(--ac);background:var(--card);box-shadow:0 0 0 2px color-mix(in srgb,var(--ac) 25%,transparent)}
 .ed.t{min-width:230px}
 input.dt{width:132px;padding:3px 6px}select.kd,select.sm{padding:3px 6px;font-size:12px}
+.doc{display:flex;align-items:center;gap:2px;max-width:200px;white-space:nowrap}button.at{font-size:12px;padding:3px 8px;margin-top:2px}button.at:disabled{opacity:.6}
 a.call{display:inline-block;font-size:12px;padding:0 6px}
 tr.grp td{background:var(--bg);font-weight:700;font-size:12px;letter-spacing:.02em;color:var(--mut);padding:6px 10px;border-bottom:1px solid var(--bd)}
 </style></head><body><div id="ld"><div class="sp"></div><b>Connecting to data…</b><span>Loading your Google Sheet</span><button id="retry" hidden>Try again</button></div><div class="wrap">
@@ -91,9 +92,10 @@ tr.grp td{background:var(--bg);font-weight:700;font-size:12px;letter-spacing:.02
 <button id="exp">📤 Export CSV</button>
 </div>
 
+<input type="file" id="dfile" multiple hidden accept=".pdf,image/*,.doc,.docx,.xls,.xlsx">
 <div class="tw"><table><thead><tr id="head"></tr></thead><tbody id="body"></tbody></table></div>
 <div class="pg"><button id="prev">‹</button><span id="pinfo"></span><button id="next">›</button></div>
-<p class="note">✏️ Click any cell to edit it — changes save to your Google Sheet automatically. Change <b>Status</b> and the row moves to its status group. Change <b>Category</b> to move it between the Light Work and Materials sheets. Edits made directly in the sheet appear here within about 15 seconds.</p>
+<p class="note">✏️ Click any cell to edit it. Once a permit is Approved you can attach documents (stored in your Google Drive) — changes save to your Google Sheet automatically. Change <b>Status</b> and the row moves to its status group. Change <b>Category</b> to move it between the Light Work and Materials sheets. Edits made directly in the sheet appear here within about 15 seconds.</p>
 </div>
 <script>
 const APP_URL="https://script.google.com/macros/s/AKfycbzNKrAvhouPM0TAvF_0I1o9HukVViEqKRpb85iusBgo4h1d3fjmYzO2IGBy24b7iRsH/exec";
@@ -145,8 +147,9 @@ $("parse").onclick=()=>{const t=$("paste").value;
 
 /* ---------- data <-> sheet ---------- */
 const FK={ref:"Ref",type:"Title",start:"StartDate",end:"EndDate",time:"Time",location:"Location",company:"Company",by:"SubmittedBy",phone:"Phone",hot:"HotWork",dir:"Dir",ret:"Return",status:"Status"};
-function toRow(kind,o){return{id:o.ID,kind,ref:o.Ref||"",type:o.Title||"",start:pd(o.StartDate),end:pd(o.EndDate)||pd(o.StartDate),time:o.Time||"",location:o.Location||"",company:o.Company||"",by:o.SubmittedBy||"",phone:o.Phone||"",hot:kind==="work"&&isHot(o.HotWork||""),dir:kind==="mat"?(o.Dir||""):"",ret:kind==="mat"&&isHot(o.Return||""),status:STS.find(x=>x.toLowerCase()===String(o.Status||"").trim().toLowerCase())||"Pending"}}
-function toData(r){const d={Ref:r.ref,Title:r.type,StartDate:r.start,EndDate:r.end||r.start,Time:r.time,Location:r.location,Company:r.company,SubmittedBy:r.by,Phone:r.phone,Status:r.status};if(r.kind==="mat"){d.Dir=r.dir||"Out";d.Return=r.ret?"Yes":"No"}else d.HotWork=r.hot?"Yes":"No";return d}
+function parseDocs(t){try{const a=JSON.parse(t||"[]");return Array.isArray(a)?a:[]}catch(e){return[]}}
+function toRow(kind,o){return{id:o.ID,kind,ref:o.Ref||"",type:o.Title||"",start:pd(o.StartDate),end:pd(o.EndDate)||pd(o.StartDate),time:o.Time||"",location:o.Location||"",company:o.Company||"",by:o.SubmittedBy||"",phone:o.Phone||"",hot:kind==="work"&&isHot(o.HotWork||""),dir:kind==="mat"?(o.Dir||""):"",ret:kind==="mat"&&isHot(o.Return||""),status:STS.find(x=>x.toLowerCase()===String(o.Status||"").trim().toLowerCase())||"Pending",docs:parseDocs(o.Docs)}}
+function toData(r){const d={Ref:r.ref,Title:r.type,StartDate:r.start,EndDate:r.end||r.start,Time:r.time,Location:r.location,Company:r.company,SubmittedBy:r.by,Phone:r.phone,Status:r.status,Docs:JSON.stringify(r.docs||[])};if(r.kind==="mat"){d.Dir=r.dir||"Out";d.Return=r.ret?"Yes":"No"}else d.HotWork=r.hot?"Yes":"No";return d}
 async function api(body){const r=await fetch(APP_URL,{method:"POST",body:JSON.stringify(body)});const j=await r.json();if(j.error)throw new Error(j.error);return j}
 const setLive=t=>{$("live").textContent=t};
 const nowT=()=>new Date().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"});
@@ -203,14 +206,26 @@ B.addEventListener("keydown",e=>{const t=e.target;if(!t.classList||!t.classList.
  if(e.key==="Enter"){e.preventDefault();t.blur()}
  else if(e.key==="Escape"){const r=rows.find(x=>x.id===t.dataset.id);if(r)t.textContent=r[t.dataset.f]||"";t.blur()}});
 B.addEventListener("paste",e=>{if(e.target.classList&&e.target.classList.contains("ed")){e.preventDefault();const tx=(e.clipboardData||window.clipboardData).getData("text").replace(/\s+/g," ");document.execCommand("insertText",false,tx)}});
-B.addEventListener("click",e=>{const d=e.target.dataset&&e.target.dataset.d;if(d)delRow(d)});
+B.addEventListener("click",e=>{const ds=e.target.dataset||{};if(ds.d)delRow(ds.d);
+ if(ds.a){attachId=ds.a;$("dfile").click()}
+ if(ds.xd){const[id,j]=ds.xd.split(":");rmDoc(id,+j)}});
+let attachId="";
+const b64=f=>new Promise((res,rej)=>{const rd=new FileReader();rd.onload=()=>res(String(rd.result).split(",")[1]||"");rd.onerror=()=>rej(rd.error);rd.readAsDataURL(f)});
+$("dfile").onchange=async e=>{const fs=[...e.target.files];e.target.value="";const r=rows.find(x=>x.id===attachId);if(!r)return;
+ for(const f of fs){if(f.size>8e6){toast("⚠️ "+f.name+" is over 8 MB, skipped");continue}
+  setLive("⬆️ Uploading "+f.name+"…");pending++;
+  try{const j=await api({action:"upload",sheet:r.kind,id:r.id,name:f.name,mime:f.type||"application/octet-stream",b64:await b64(f)});r.docs=j.docs;lastSig="";render();setLive("🟢 Uploaded · "+nowT());toast("📎 "+f.name+" attached")}
+  catch(x){setLive("⚠️ Upload failed");toast("⚠️ Upload failed: "+x.message)}
+  finally{pending--}}};
+async function rmDoc(id,j){const r=rows.find(x=>x.id===id);if(!r||!r.docs[j])return;if(!confirm("Remove “"+r.docs[j].n+"”?"))return;pending++;
+ try{const o=await api({action:"removedoc",sheet:r.kind,id,fileId:r.docs[j].i});r.docs=o.docs;lastSig="";render()}catch(x){toast("⚠️ Not removed: "+x.message)}finally{pending--}}
 /* ---------- export ---------- */
 $("exp").onclick=()=>{const q=v=>'"'+String(v||"").replace(/"/g,'""')+'"';
  const t="Title,StartDate,EndDate,Time,Location,Company,SubmittedBy,Phone,Ref,HotWork,Kind,Dir,Return,Status\n"+rows.map(r=>[q(r.type),r.start,r.end,q(r.time),q(r.location),q(r.company),q(r.by),q(r.phone),q(r.ref),r.hot?"Yes":"No",r.kind==="mat"?"material":"work",r.dir||"",r.ret?"Yes":"No",stOf(r)].join(",")).join("\n");
  const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([t],{type:"text/csv"}));a.download="lightwork-requests.csv";a.click()};
 /* ---------- table ---------- */
-const LABEL={cd:"⏱️ Countdown",ref:"🔖 Ref",kind:"📌 Category",start:"📅 Start",end:"🏁 End",time:"🕓 Time",type:"🛠️ Type of work",location:"📍 Location",company:"🏢 Company",by:"👤 Submitted by",phone:"📞 Phone",hot:"🔥 Hot work",dir:"↕️ Direction",ret:"↩️ Returns?",extra:"🔥 Hot work / Direction",status:"🏷️ Status"};
-const COLS={work:["ref","kind","start","end","time","type","location","company","by","phone","hot","status"],mat:["ref","kind","start","end","time","type","location","company","by","phone","dir","ret","status"],ok:["cd","ref","kind","start","end","time","type","location","company","by","phone","extra","status"]};
+const LABEL={cd:"⏱️ Countdown",ref:"🔖 Ref",kind:"📌 Category",start:"📅 Start",end:"🏁 End",time:"🕓 Time",type:"🛠️ Type of work",location:"📍 Location",company:"🏢 Company",by:"👤 Submitted by",phone:"📞 Phone",hot:"🔥 Hot work",dir:"↕️ Direction",ret:"↩️ Returns?",extra:"🔥 Hot work / Direction",status:"🏷️ Status",docs:"📎 Documents"};
+const COLS={work:["ref","kind","start","end","time","type","location","company","by","phone","hot","status","docs"],mat:["ref","kind","start","end","time","type","location","company","by","phone","dir","ret","status","docs"],ok:["cd","ref","kind","start","end","time","type","location","company","by","phone","extra","status","docs"]};
 const SORTK={cd:"start",extra:"hot"};
 function setHead(){$("head").innerHTML=COLS[view].map(c=>`<th data-k="${SORTK[c]||c}">${LABEL[c]}</th>`).join("")+"<th></th>"}
 const tstr=()=>{const n=new Date();return `${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,"0")}-${String(n.getDate()).padStart(2,"0")}`};
@@ -255,6 +270,7 @@ const CELL={
  dir:r=>`<td>${dirSel(r)}</td>`,
  ret:r=>`<td>${yn(r,"ret",r.ret)}</td>`,
  extra:r=>`<td>${r.kind==="mat"?dirSel(r)+" "+`<select class="sm" ${A(r)} data-f="ret" title="Returns after service?"><option value="No" ${!r.ret?"selected":""}>No return</option><option value="Yes" ${r.ret?"selected":""}>↩ Returns</option></select>`:hotSel(r)}</td>`,
+ docs:r=>`<td>${["Approved","Completed"].includes(r.status)?`${(r.docs||[]).map((d,j)=>`<div class="doc"><a href="${esc(d.u)}" target="_blank" rel="noopener" title="${esc(d.n)}">📄 ${esc(d.n.length>18?d.n.slice(0,16)+"…":d.n)}</a><button class="x" data-xd="${esc(r.id)}:${j}" title="Remove">✕</button></div>`).join("")}<button class="at" data-a="${esc(r.id)}">📎 Attach</button>`:`<span class="note">after approval</span>`}</td>`,
  status:r=>`<td><select class="st s-${r.status}" ${A(r)} data-f="status">${STS.map(s=>`<option value="${s}" ${s===r.status?"selected":""}>${SI[s]} ${s}</option>`).join("")}</select></td>`
 };
 function render(){
