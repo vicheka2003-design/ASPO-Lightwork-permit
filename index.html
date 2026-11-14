@@ -8,14 +8,14 @@
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;--bg:#111418;--card:#1b1f25;--tx:#eceff3;--mut:#9aa3af;--bd:#2d333b;--ac:#60a5fa;--hot:#fca5a5;--hotbg:#4c1d1d;--ok:#86efac;--okbg:#14351f;--wait:#fcd34d;--waitbg:#3d2f0a}}
 *{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
 body{margin:0;background:var(--bg);color:var(--tx);font:14px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
-.wrap{max-width:1400px;margin:0 auto;padding:16px}
+.wrap{max-width:1500px;margin:0 auto;padding:16px}
 h1{font-size:20px;margin:0 0 12px}
 .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:14px}
 .stat{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:10px 12px}
 .stat b{display:block;font-size:22px}.stat span{color:var(--mut);font-size:12px}
 .bar{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
 input,select,textarea,button{font:inherit;color:var(--tx);background:var(--card);border:1px solid var(--bd);border-radius:8px;padding:7px 10px}
-button{cursor:pointer}button.p{background:var(--ac);color:#fff;border-color:var(--ac)}
+button{cursor:pointer}button.p{background:var(--ac);color:#fff;border-color:var(--ac)}button:disabled{opacity:.6;cursor:wait}
 input[type=search]{flex:1;min-width:160px}
 details{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:10px 12px;margin-bottom:12px}
 summary{cursor:pointer;font-weight:600}
@@ -23,37 +23,39 @@ summary{cursor:pointer;font-weight:600}
 .grid label{display:flex;flex-direction:column;font-size:12px;color:var(--mut);gap:3px}
 textarea{width:100%;min-height:110px;margin:8px 0}
 .tw{overflow-x:auto;background:var(--card);border:1px solid var(--bd);border-radius:10px}
-table{width:100%;border-collapse:collapse;min-width:1150px}
-th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--bd);vertical-align:top}
+table{width:100%;border-collapse:collapse;min-width:1250px}
+th,td{text-align:left;padding:7px 8px;border-bottom:1px solid var(--bd);vertical-align:top}
 th{cursor:pointer;font-size:12px;color:var(--mut);white-space:nowrap;user-select:none}
 tr:last-child td{border-bottom:0}
 .tag{display:inline-block;padding:2px 8px;border-radius:99px;font-size:12px;font-weight:600;white-space:nowrap}
-.hot{background:var(--hotbg);color:var(--hot)}.no{background:var(--okbg);color:var(--ok)}
 select.st{font-weight:600;font-size:12px;padding:3px 6px;border-radius:99px}
 .s-Pending{background:var(--waitbg);color:var(--wait)}.s-Approved{background:var(--okbg);color:var(--ok)}.s-Rejected{background:var(--hotbg);color:var(--hot)}.s-Completed,.s-Cancelled{background:var(--bd);color:var(--mut)}
-.tabs{display:flex;gap:6px;margin-bottom:12px}.tabs button.on{background:var(--ac);color:#fff;border-color:var(--ac)}.cd{font-weight:600;white-space:nowrap}.cd.urg{color:var(--wait)}.cd.run{color:var(--ok)}.cd.late{color:var(--hot)}
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}.tabs button.on{background:var(--ac);color:#fff;border-color:var(--ac)}.cd{font-weight:600;white-space:nowrap}.cd.urg{color:var(--wait)}.cd.run{color:var(--ok)}.cd.late{color:var(--hot)}
 .hd{display:flex;align-items:center;gap:12px;margin-bottom:14px}.hd i{font-style:normal;font-size:22px;background:var(--ac);border-radius:12px;width:44px;height:44px;display:grid;place-items:center}.hd small{display:block;color:var(--mut);font-size:12px}
 .stat{display:flex;gap:10px;align-items:center;border-left:4px solid var(--ac)}.stat i{font-style:normal;font-size:24px}.stat.w{border-left-color:var(--wait)}.stat.g{border-left-color:var(--ok)}.stat.r{border-left-color:var(--hot)}
 .alert{display:flex;flex-wrap:wrap;align-items:center;gap:10px;border-radius:10px;padding:10px 14px;margin-bottom:10px;font-weight:600}.alert.r{background:var(--hotbg);color:var(--hot);border:1px solid var(--hot)}.alert.w{background:var(--waitbg);color:var(--wait);border:1px solid var(--wait)}.alert button{margin-left:auto}
 .badge{background:var(--hot);color:#fff;border-radius:99px;padding:0 7px;font-size:11px;margin-left:6px}
 tr.late td{background:var(--hotbg)}tr.today td{background:var(--waitbg)}th{background:var(--bg)}a{color:var(--ac);text-decoration:none}
 :root[data-theme="dark"]{color-scheme:dark;--bg:#111418;--card:#1b1f25;--tx:#eceff3;--mut:#9aa3af;--bd:#2d333b;--ac:#60a5fa;--hot:#fca5a5;--hotbg:#4c1d1d;--ok:#86efac;--okbg:#14351f;--wait:#fcd34d;--waitbg:#3d2f0a}
-#theme{margin-left:auto;font-size:18px;padding:6px 10px}input.rf{width:96px;font-weight:700;padding:4px 8px}input.need{border-color:var(--wait);background:var(--waitbg)}
-.doc{display:flex;align-items:center;gap:2px;max-width:210px;white-space:nowrap}button.at{font-size:12px;padding:3px 8px;margin-top:2px}
-.tag.lw{background:var(--bd);color:var(--tx)}.tag.mt{background:var(--waitbg);color:var(--wait)}
+#theme{margin-left:auto;font-size:18px;padding:6px 10px}input.rf{width:92px;font-weight:700;padding:4px 8px}input.need{border-color:var(--wait);background:var(--waitbg)}
 #bell+#theme{margin-left:0}
 #alerts{display:none;position:fixed;top:calc(env(safe-area-inset-top,0px) + 66px);right:16px;width:min(380px,calc(100vw - 32px));max-height:70vh;overflow:auto;z-index:20;background:var(--card);border:1px solid var(--bd);border-radius:12px;box-shadow:0 10px 32px rgba(0,0,0,.25);padding:8px}#alerts.open{display:block}
 #alerts .alert{font-size:13px;margin:0 0 6px;padding:8px 10px}#alerts .alert:last-child{margin-bottom:0}
 .toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 22px);transform:translateX(-50%);background:var(--tx);color:var(--bg);padding:10px 18px;border-radius:99px;font-weight:600;z-index:30;opacity:1;transition:opacity .6s;box-shadow:0 6px 24px rgba(0,0,0,.3);max-width:92vw;text-align:center}.toast.f{opacity:0}
 #bn{transition:opacity .6s,transform .6s}#bn.gone{opacity:0;transform:scale(.3);pointer-events:none}
-body.live #imp,body.live button.x,body.live button.at,body.live #cancel{display:none}body.live select.st,body.live input.rf{pointer-events:none;border-color:transparent;background-image:none}
 .pg{display:flex;gap:8px;align-items:center;justify-content:center;margin:12px 0;color:var(--mut)}
-.x{border:0;background:none;color:var(--mut);padding:2px 6px}
+.x{border:0;background:none;color:var(--mut);padding:2px 6px}.x:hover{color:var(--hot)}
 .note{color:var(--mut);font-size:12px;margin:6px 0 0}
 .empty{padding:30px;text-align:center;color:var(--mut)}
-#ld{position:fixed;inset:0;z-index:100;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;transition:opacity .45s}#ld.done{opacity:0;pointer-events:none}#ld b{font-size:18px}#ld span{color:var(--mut);font-size:13px}
+#ld{position:fixed;inset:0;z-index:100;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:20px;text-align:center;transition:opacity .45s}#ld.done{opacity:0;pointer-events:none}#ld b{font-size:18px}#ld span{color:var(--mut);font-size:13px;max-width:460px}#ld.err .sp{display:none}#ld button{margin-top:6px}
 .sp{width:44px;height:44px;border:4px solid var(--bd);border-top-color:var(--ac);border-radius:50%;animation:sp .8s linear infinite}@keyframes sp{to{transform:rotate(360deg)}}
-</style></head><body><div id="ld"><div class="sp"></div><b>Connecting to data…</b><span>Loading your Google Sheet</span></div><div class="wrap">
+.ed{min-width:70px;min-height:22px;padding:2px 6px;border-radius:6px;border:1px solid transparent;outline:none;cursor:text;word-break:break-word}
+.ed:hover{border-color:var(--bd)}.ed:focus{border-color:var(--ac);background:var(--card);box-shadow:0 0 0 2px color-mix(in srgb,var(--ac) 25%,transparent)}
+.ed.t{min-width:230px}
+input.dt{width:132px;padding:3px 6px}select.kd,select.sm{padding:3px 6px;font-size:12px}
+a.call{display:inline-block;font-size:12px;padding:0 6px}
+tr.grp td{background:var(--bg);font-weight:700;font-size:12px;letter-spacing:.02em;color:var(--mut);padding:6px 10px;border-bottom:1px solid var(--bd)}
+</style></head><body><div id="ld"><div class="sp"></div><b>Connecting to data…</b><span>Loading your Google Sheet</span><button id="retry" hidden>Try again</button></div><div class="wrap">
 <div class="hd"><i>👷</i><div><h1 style="margin:0">Light Work Tracker</h1><small>Airport work permit requests · approvals · schedule</small></div><button id="bell" title="Notifications" style="margin-left:auto;font-size:18px;padding:6px 10px;position:relative">🔔<span id="bn" class="badge" hidden style="position:absolute;top:-6px;right:-6px;margin:0">0</span></button><button id="theme" title="Switch light / dark">🌙</button></div><div id="alerts"></div>
 <div class="stats" id="stats"></div>
 
@@ -69,13 +71,13 @@ body.live #imp,body.live button.x,body.live button.at,body.live #cancel{display:
 <label>Company<input id="f-co"></label>
 <label>Submitted by<input id="f-by"></label>
 <label>Phone<input id="f-ph"></label>
-<label>Request kind<select id="f-kind"><option value="work">👷 Light work</option><option value="mat">📦 Material bring in/out</option></select></label>
+<label>Request kind (which sheet)<select id="f-kind"><option value="work">👷 Light work</option><option value="mat">📦 Material bring in/out</option></select></label>
 <label>Direction (materials)<select id="f-dir"><option>Out</option><option>In</option></select></label>
 <label>Returns after service?<select id="f-ret"><option value="0">No</option><option value="1">Yes</option></select></label>
 <label>Ref no.<input id="f-ref" placeholder="L-xxxx"></label>
 <label>Hot work?<select id="f-hot"><option value="0">No</option><option value="1">Yes</option></select></label>
 </div>
-<button class="p" id="save">📋 Copy row for Google Sheet</button><button id="hdrcopy" title="Only needed once, for row 1 of your sheet">📋 Copy header row</button><button id="cancel" hidden>Cancel edit</button>
+<button class="p" id="save">💾 Save to Google Sheet</button>
 <span class="note" id="msg"></span>
 </details>
 
@@ -86,22 +88,19 @@ body.live #imp,body.live button.x,body.live button.at,body.live #cancel{display:
 <select id="fkind" style="display:none"><option value="">All kinds</option><option value="work">👷 Light work</option><option value="mat">📦 Materials</option></select>
 <select id="fhot"><option value="">Hot work: all</option><option value="1">Hot work only</option><option value="0">No hot work</option></select>
 <select id="fst"><option value="">All status</option></select>
-<button id="imp">📥 Import CSV</button><button id="exp">📤 Export CSV</button>
-<input type="file" id="file" accept=".csv" hidden><input type="file" id="dfile" multiple hidden accept=".pdf,image/*,.doc,.docx,.xls,.xlsx">
+<button id="exp">📤 Export CSV</button>
 </div>
 
 <div class="tw"><table><thead><tr id="head"></tr></thead><tbody id="body"></tbody></table></div>
 <div class="pg"><button id="prev">‹</button><span id="pinfo"></span><button id="next">›</button></div>
-<p //class="note">Workflow: paste the email → Read email → check fields → Copy row → paste into the next empty row of your Google Sheet. Change status/Ref directly in the sheet; the dashboard refreshes every 60 seconds. Sheet columns (row 1): start, end, time, type, location, company, by, phone, hot, status, ref, kind, dir, return.</p>
+<p class="note">✏️ Click any cell to edit it — changes save to your Google Sheet automatically. Change <b>Status</b> and the row moves to its status group. Change <b>Category</b> to move it between the Light Work and Materials sheets. Edits made directly in the sheet appear here within about 15 seconds.</p>
 </div>
 <script>
-const SHEET_URL="https://docs.google.com/spreadsheets/d/e/2PACX-1vTBo9a5qr1pOLvfU2LHWJjGfHH7hky_DF3tS3JhzH0y-GjlweBApVvwXeay95DjGiv2xF1Xhh2P4Lph/pub?gid=304675658&single=true&output=csv";
-const KEY="lw-requests",STS=["Pending","Approved","Rejected","Completed","Cancelled"],SI={Pending:"⏳",Approved:"✅",Rejected:"❌",Completed:"🏁",Cancelled:"🚫"};
-let rows=[],view="work",sortK="start",sortD=-1,page=0;const PS=50;
+const APP_URL="";
+const STS=["Pending","Approved","Rejected","Completed","Cancelled"],GO=["Pending","Approved","Completed","Rejected","Cancelled"],SI={Pending:"⏳",Approved:"✅",Rejected:"❌",Completed:"🏁",Cancelled:"🚫"};
+let rows=[],view="work",sortK="start",sortD=-1,page=0,pending=0,busy=false,lastSig="";const PS=50;
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-function load(){if(LIVE){rows=[];return}try{rows=JSON.parse(localStorage.getItem(KEY)||"[]")}catch(e){rows=[]}}
-function store(){if(LIVE)return;try{localStorage.setItem(KEY,JSON.stringify(rows))}catch(e){}}
 const stOf=r=>STS.includes(r.status)?r.status:"Pending";
 function pd(s){if(!s)return"";s=s.trim();let m=s.match(/^(\d{4})-(\d{2})-(\d{2})/);if(m)return m[0];m=s.match(/(?<!\d)(\d{1,2})[\/.\-](\d{1,2})[\/.\-](\d{2,4})/);
  if(m){let y=+m[3],a=+m[1],b=+m[2];if(y<100)y+=2000;if(a>12&&b<=12)[a,b]=[b,a];return`${y}-${String(a).padStart(2,"0")}-${String(b).padStart(2,"0")}`}
@@ -143,102 +142,146 @@ $("parse").onclick=()=>{const t=$("paste").value;
  const hotNo=/hot\s*work\s*[:\-–]?\s*(no|n\/a|not)/i.test(t);
  $("f-hot").value=!hotNo&&(/hot\s*work\s*[:\-–]?\s*(yes|y|required|true)/i.test(t)||/\b(weld\w*|grind\w*|gas cutting|flame cutting|torch|brazing|soldering)\b/i.test(t))?"1":"0";
  $("msg").textContent=$("f-start").value?" Check the fields (especially company and hot work), then save.":" No dates found in the email text. If they are in the attached PDF, paste the PDF text too, or type the dates."};
-const HDR=["Title","StartDate","EndDate","Time","Location","Company","SubmittedBy","Phone","Ref","HotWork","Kind","Dir","Return","Status"];
-async function copyText(t){try{await navigator.clipboard.writeText(t);return true}catch(e){const a=document.createElement("textarea");a.value=t;a.style.cssText="position:fixed;opacity:0";document.body.appendChild(a);a.select();let ok=false;try{ok=document.execCommand("copy")}catch(x){}a.remove();return ok}}
-$("hdrcopy").onclick=async()=>{toast(await copyText(HDR.join("\t"))?"📋 Header copied · paste into A1 of your sheet":"⚠️ Copy failed")};
-$("save").onclick=async()=>{const v=i=>$(i).value.trim(),cl=s=>{s=String(s||"").replace(/[\t\r\n]+/g," ").trim();return /^[=+\-@]/.test(s)?"'"+s:s};
- const mat=$("f-kind").value==="mat";
+
+/* ---------- data <-> sheet ---------- */
+const FK={ref:"Ref",type:"Title",start:"StartDate",end:"EndDate",time:"Time",location:"Location",company:"Company",by:"SubmittedBy",phone:"Phone",hot:"HotWork",dir:"Dir",ret:"Return",status:"Status"};
+function toRow(kind,o){return{id:o.ID,kind,ref:o.Ref||"",type:o.Title||"",start:pd(o.StartDate),end:pd(o.EndDate)||pd(o.StartDate),time:o.Time||"",location:o.Location||"",company:o.Company||"",by:o.SubmittedBy||"",phone:o.Phone||"",hot:kind==="work"&&isHot(o.HotWork||""),dir:kind==="mat"?(o.Dir||""):"",ret:kind==="mat"&&isHot(o.Return||""),status:STS.find(x=>x.toLowerCase()===String(o.Status||"").trim().toLowerCase())||"Pending"}}
+function toData(r){const d={Ref:r.ref,Title:r.type,StartDate:r.start,EndDate:r.end||r.start,Time:r.time,Location:r.location,Company:r.company,SubmittedBy:r.by,Phone:r.phone,Status:r.status};if(r.kind==="mat"){d.Dir=r.dir||"Out";d.Return=r.ret?"Yes":"No"}else d.HotWork=r.hot?"Yes":"No";return d}
+async function api(body){const r=await fetch(APP_URL,{method:"POST",body:JSON.stringify(body)});const j=await r.json();if(j.error)throw new Error(j.error);return j}
+const setLive=t=>{$("live").textContent=t};
+const nowT=()=>new Date().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"});
+function editing(){const a=document.activeElement;return !!(a&&a.closest&&a.closest("#body")&&(a.isContentEditable||/^(INPUT|SELECT)$/.test(a.tagName)))}
+function loadFail(msg,first){setLive("⚠️ "+msg);if(first&&$("ld")){$("ld").classList.add("err");$("ld").querySelector("b").textContent="Couldn’t connect to the data";$("ld").querySelector("span").textContent=msg;$("retry").hidden=false}}
+async function loadData(){
+ if(!APP_URL){loadFail("Setup needed: paste your Apps Script web app URL into APP_URL at the top of the script in index.html.",true);return}
+ if(busy||pending>0||editing())return;busy=true;const first=!!$("ld");
+ try{const resp=await fetch(APP_URL+(APP_URL.includes("?")?"&":"?")+"_="+Date.now(),{cache:"no-store"});const j=await resp.json();if(j.error)throw new Error(j.error);
+  const next=[...(j.work||[]).map(o=>toRow("work",o)),...(j.mat||[]).map(o=>toRow("mat",o))].filter(r=>r.start||r.company||r.type);
+  const sig=JSON.stringify(next);if(sig!==lastSig||first){lastSig=sig;rows=next;render()}
+  setLive("🟢 Live · updated "+nowT());
+  const l=$("ld");if(l){l.classList.add("done");setTimeout(()=>l.remove(),500)}}
+ catch(e){loadFail((e&&e.message&&e.message!=="Failed to fetch"?e.message:"Couldn’t reach the sheet. Check the Apps Script URL and that access is set to “Anyone”.")+" Retrying…",first)}
+ finally{busy=false}}
+$("retry").onclick=()=>{$("ld").classList.remove("err");$("ld").querySelector("b").textContent="Connecting to data…";$("ld").querySelector("span").textContent="Loading your Google Sheet";$("retry").hidden=true;loadData()};
+/* ---------- add ---------- */
+$("save").onclick=async()=>{const v=i=>$(i).value.trim(),mat=$("f-kind").value==="mat";
  if(!v("f-start")||!v("f-co")){$("msg").textContent=" Start date and company are required.";return}
- const row=[v("f-type"),v("f-start"),v("f-end")||v("f-start"),v("f-time"),v("f-loc"),v("f-co"),v("f-by"),v("f-ph"),v("f-ref"),!mat&&$("f-hot").value==="1"?"Yes":"No",mat?"material":"work",mat?$("f-dir").value:"",mat&&$("f-ret").value==="1"?"Yes":"No","Pending"].map(cl).join("\t");
- const ok=await copyText(row);$("msg").textContent=ok?" Copied ✓ Paste into the next empty row (column A) of your Google Sheet.":" Copy failed — try again.";toast(ok?"📋 Row copied · paste into your sheet":"⚠️ Copy failed");
- return;
- const r={start:v("f-start"),end:v("f-end")||v("f-start"),time:v("f-time"),type:v("f-type"),location:v("f-loc"),company:v("f-co"),by:v("f-by"),phone:v("f-ph"),hot:$("f-kind").value==="work"&&$("f-hot").value==="1",kind:$("f-kind").value,dir:$("f-dir").value,ret:$("f-ret").value==="1",ref:v("f-ref"),status:"Pending"};
- if(!r.start||!r.company){$("msg").textContent=" Start date and company are required.";return}
- if(editIdx>=0){const o=rows[editIdx];r.status=stOf(o);r.docs=o.docs;rows[editIdx]=r;endEdit();$("add").open=false}else rows.push(r);store();["paste","f-start","f-end","f-time","f-type","f-loc","f-co","f-by","f-ph","f-ref"].forEach(i=>$(i).value="");$("msg").textContent=" Saved ✓";["f-hot","f-ret"].forEach(i=>$(i).value="0");$("f-dir").value="Out";toast("💾 Saved");$("f-kind").value=view==="mat"?"mat":"work";render()};
-function csvParse(t){const out=[];let row=[],c="",q=false;for(let i=0;i<t.length;i++){const ch=t[i];
- if(q){if(ch=='"'&&t[i+1]=='"'){c+='"';i++}else if(ch=='"')q=false;else c+=ch}
- else if(ch=='"')q=true;else if(ch==","){row.push(c);c=""}
- else if(ch=="\n"||ch=="\r"){if(ch=="\r"&&t[i+1]=="\n")i++;row.push(c);c="";if(row.some(x=>x.trim()))out.push(row);row=[]}else c+=ch}
- row.push(c);if(row.some(x=>x.trim()))out.push(row);return out}
-$("imp").onclick=()=>$("file").click();
-$("file").onchange=e=>{const f=e.target.files[0];if(!f)return;const rd=new FileReader();rd.onload=()=>{
- const t=csvParse(String(rd.result));if(t.length<2)return;const h=t[0].map(x=>x.trim().toLowerCase());
- const ix=re=>h.findIndex(x=>re.test(x));
- const I={a:ix(/start|from/),b:ix(/^end|until/),tm:ix(/time/),c:ix(/type|desc|title/),l:ix(/loc/),d:ix(/company|contractor/),by:ix(/^by$|submit|requester|name/),p:ix(/phone|tel/),e:ix(/hot/),s:ix(/status/),rf:ix(/^ref/),k:ix(/^kind/),dr:ix(/^dir/),rt:ix(/^return/)};
- const g=(r,k)=>(I[k]>=0?(r[I[k]]||""):"").trim();let n=0;
- t.slice(1).forEach(r=>{const s=pd(g(r,"a"));if(!s)return;const st=STS.find(x=>x.toLowerCase()===g(r,"s").toLowerCase())||"Pending";
- rows.push({start:s,end:pd(g(r,"b"))||s,time:g(r,"tm"),type:g(r,"c"),location:g(r,"l"),company:g(r,"d"),by:g(r,"by"),phone:g(r,"p"),hot:isHot(g(r,"e")),status:st,ref:g(r,"rf"),kind:/mat/i.test(g(r,"k"))?"mat":"work",dir:g(r,"dr"),ret:isHot(g(r,"rt"))});n++});
- store();render();alert(n+" requests imported")};rd.readAsText(f);e.target.value=""};
+ const r={id:"",kind:mat?"mat":"work",ref:v("f-ref"),type:v("f-type"),start:v("f-start"),end:v("f-end")||v("f-start"),time:v("f-time"),location:v("f-loc"),company:v("f-co"),by:v("f-by"),phone:v("f-ph"),hot:!mat&&$("f-hot").value==="1",dir:mat?$("f-dir").value:"",ret:mat&&$("f-ret").value==="1",status:"Pending"};
+ $("save").disabled=true;$("msg").textContent=" Saving…";pending++;
+ try{const j=await api({action:"add",sheet:r.kind,data:toData(r)});r.id=j.id;rows.push(r);lastSig="";
+  ["paste","f-start","f-end","f-time","f-type","f-loc","f-co","f-by","f-ph","f-ref"].forEach(i=>$(i).value="");["f-hot","f-ret"].forEach(i=>$(i).value="0");$("f-dir").value="Out";
+  $("msg").textContent=" Saved ✓";toast("💾 Saved to the "+(mat?"Materials":"Light Work")+" sheet");if(view!=="ok"&&view!==r.kind)setView(r.kind);else render()}
+ catch(e){$("msg").textContent=" ⚠️ Not saved: "+e.message}
+ finally{pending--;$("save").disabled=false}};
+/* ---------- edit in place ---------- */
+async function setField(id,f,v){const r=rows.find(x=>x.id===id);if(!r)return;
+ if(f==="kind")return moveRow(r,v);
+ if(f==="hot"||f==="ret")v=(v==="Yes"||v===true);
+ if(f==="ref")v=String(v).replace(/^ref\s*[:.]?\s*/i,"");
+ if(r[f]===v)return;
+ const old=r[f];r[f]=v;lastSig="";render();setLive("💾 Saving…");pending++;
+ try{await api({action:"update",sheet:r.kind,id,data:{[FK[f]]:(f==="hot"||f==="ret")?(v?"Yes":"No"):v}});setLive("🟢 Saved · "+nowT());
+  if(f==="status")toast(`${SI[v]} ${r.company||"Request"} → ${v}${v==="Approved"&&!r.ref?" · add the Ref no.":""}`)}
+ catch(e){r[f]=old;lastSig="";render();setLive("⚠️ Not saved");toast("⚠️ Not saved: "+e.message)}
+ finally{pending--}}
+async function moveRow(r,nk){if(r.kind===nk)return;const old={...r};
+ r.kind=nk;if(nk==="mat"){r.hot=false;r.dir=r.dir||"Out"}else{r.dir="";r.ret=false}
+ lastSig="";render();setLive("💾 Moving…");pending++;
+ try{const j=await api({action:"add",sheet:nk,data:toData(r)});await api({action:"delete",sheet:old.kind,id:old.id});r.id=j.id;setLive("🟢 Saved · "+nowT());toast("📦 Moved to the "+(nk==="mat"?"Materials":"Light Work")+" sheet")}
+ catch(e){Object.assign(r,old);lastSig="";render();setLive("⚠️ Not moved");toast("⚠️ Not moved: "+e.message)}
+ finally{pending--}}
+async function delRow(id){const i=rows.findIndex(r=>r.id===id);if(i<0)return;const r=rows[i];
+ if(!confirm("Delete this request"+(r.company?" ("+r.company+")":"")+"? This also removes it from the Google Sheet."))return;
+ rows.splice(i,1);lastSig="";render();pending++;
+ try{await api({action:"delete",sheet:r.kind,id});setLive("🟢 Deleted · "+nowT())}
+ catch(e){rows.splice(i,0,r);lastSig="";render();toast("⚠️ Not deleted: "+e.message)}
+ finally{pending--}}
+const B=$("body");
+B.addEventListener("change",e=>{const t=e.target,id=t.dataset&&t.dataset.id,f=t.dataset&&t.dataset.f;if(!id||!f||t.isContentEditable)return;setField(id,f,t.value);if(t.tagName==="SELECT"||t.type==="date")t.blur()});
+B.addEventListener("focusout",e=>{const t=e.target;if(!t.classList||!t.classList.contains("ed"))return;const v=t.textContent.replace(/\s+/g," ").trim();t.textContent=v;setField(t.dataset.id,t.dataset.f,v)});
+B.addEventListener("keydown",e=>{const t=e.target;if(!t.classList||!t.classList.contains("ed"))return;
+ if(e.key==="Enter"){e.preventDefault();t.blur()}
+ else if(e.key==="Escape"){const r=rows.find(x=>x.id===t.dataset.id);if(r)t.textContent=r[t.dataset.f]||"";t.blur()}});
+B.addEventListener("paste",e=>{if(e.target.classList&&e.target.classList.contains("ed")){e.preventDefault();const tx=(e.clipboardData||window.clipboardData).getData("text").replace(/\s+/g," ");document.execCommand("insertText",false,tx)}});
+B.addEventListener("click",e=>{const d=e.target.dataset&&e.target.dataset.d;if(d)delRow(d)});
+/* ---------- export ---------- */
 $("exp").onclick=()=>{const q=v=>'"'+String(v||"").replace(/"/g,'""')+'"';
- const t="start,end,time,type,location,company,by,phone,hot,status,ref,kind,dir,return\n"+rows.map(r=>[r.start,r.end,q(r.time),q(r.type),q(r.location),q(r.company),q(r.by),q(r.phone),r.hot?"Yes":"No",stOf(r),q(r.ref),r.kind==="mat"?"material":"work",r.dir||"",r.ret?"Yes":"No"].join(",")).join("\n");
+ const t="Title,StartDate,EndDate,Time,Location,Company,SubmittedBy,Phone,Ref,HotWork,Kind,Dir,Return,Status\n"+rows.map(r=>[q(r.type),r.start,r.end,q(r.time),q(r.location),q(r.company),q(r.by),q(r.phone),q(r.ref),r.hot?"Yes":"No",r.kind==="mat"?"material":"work",r.dir||"",r.ret?"Yes":"No",stOf(r)].join(",")).join("\n");
  const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([t],{type:"text/csv"}));a.download="lightwork-requests.csv";a.click()};
-const COLS=[["ref","🔖 Ref"],["kind","📌 Kind"],["start","📅 Start"],["end","🏁 End"],["time","🕓 Time"],["type","🛠️ Type of work"],["location","📍 Location"],["company","🏢 Company"],["by","👤 Submitted by"],["phone","📞 Phone"],["hot","🔥 Hot work"],["st","🏷️ Status"],["docs","📎 Documents"]];
-function setHead(){$("head").innerHTML=(view==="ok"?[["start","⏱️ Countdown"]]:[]).concat(COLS.filter(c=>!(c[0]==="kind"&&view==="work")&&!(c[0]==="hot"&&view==="mat"))).map(c=>`<th data-k="${c[0]}">${c[1]}</th>`).join("")+"<th></th>"}
+/* ---------- table ---------- */
+const LABEL={cd:"⏱️ Countdown",ref:"🔖 Ref",kind:"📌 Category",start:"📅 Start",end:"🏁 End",time:"🕓 Time",type:"🛠️ Type of work",location:"📍 Location",company:"🏢 Company",by:"👤 Submitted by",phone:"📞 Phone",hot:"🔥 Hot work",dir:"↕️ Direction",ret:"↩️ Returns?",extra:"🔥 Hot work / Direction",status:"🏷️ Status"};
+const COLS={work:["ref","kind","start","end","time","type","location","company","by","phone","hot","status"],mat:["ref","kind","start","end","time","type","location","company","by","phone","dir","ret","status"],ok:["cd","ref","kind","start","end","time","type","location","company","by","phone","extra","status"]};
+const SORTK={cd:"start",extra:"hot"};
+function setHead(){$("head").innerHTML=COLS[view].map(c=>`<th data-k="${SORTK[c]||c}">${LABEL[c]}</th>`).join("")+"<th></th>"}
 const tstr=()=>{const n=new Date();return `${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,"0")}-${String(n.getDate()).padStart(2,"0")}`};
 const overdue=()=>rows.filter(r=>stOf(r)==="Approved"&&(r.end||r.start)<tstr());
 function renderAlerts(){const o=overdue(),e=rows.filter(r=>stOf(r)==="Approved"&&(r.end||r.start)===tstr());let h="";
  if(o.length)h+=`<div class="alert r">🚨 ${o.length} approved work${o.length>1?"s have":" has"} ended. Please close ${o.length>1?"them":"it"} (mark Completed): ${esc(o.slice(0,3).map(r=>r.company+" · "+(r.location||r.type)).join(" | "))}${o.length>3?" …":""}<button data-go="1">View</button></div>`;
  if(e.length)h+=`<div class="alert w">⏰ ${e.length} work${e.length>1?"s end":" ends"} today<button data-go="1">View</button></div>`;
- {const nr=rows.filter(r=>stOf(r)==="Approved"&&!r.ref).length;if(nr)h+=`<div class="alert w">🔖 ${nr} approved permit${nr>1?"s have":" has"} no Ref number yet<button data-go="1">View</button></div>`}$("tab-all").textContent=`👷 Light work (${rows.filter(r=>r.kind!=="mat").length})`;$("tab-mat").textContent=`📦 Materials (${rows.filter(r=>r.kind==="mat").length})`;$("alerts").innerHTML=h||'<div class="note" style="padding:12px;text-align:center">🎉 No notifications</div>';{const n=(h.match(/class="alert/g)||[]).length;let seen="";try{seen=localStorage.getItem("lw-seen")||""}catch(e){}$("alerts").dataset.sig=h;$("bn").hidden=!n;$("bn").textContent=n;$("bn").classList.toggle("gone",!n||h===seen)}$("tab-ok").innerHTML=`✅ Approved – work schedule${o.length?`<span class="badge">${o.length}</span>`:""}`;document.title=(o.length?`(${o.length}) `:"")+"Light Work Tracker"}
-$("alerts").onclick=e=>{if(e.target.dataset?.go){setView("ok");$("alerts").classList.remove("open")}};
-function setView(v){view=v;sortK="start";sortD=v==="ok"?1:-1;page=0;$("tab-all").classList.toggle("on",v==="work");$("tab-mat").classList.toggle("on",v==="mat");$("tab-ok").classList.toggle("on",v==="ok");$("fkind").style.display=v==="ok"?"":"none";if(v!=="ok")$("f-kind").value=v;setHead();render()}
+ {const nr=rows.filter(r=>stOf(r)==="Approved"&&!r.ref).length;if(nr)h+=`<div class="alert w">🔖 ${nr} approved permit${nr>1?"s have":" has"} no Ref number yet<button data-go="1">View</button></div>`}
+ $("tab-all").textContent=`👷 Light work (${rows.filter(r=>r.kind!=="mat").length})`;$("tab-mat").textContent=`📦 Materials (${rows.filter(r=>r.kind==="mat").length})`;
+ $("alerts").innerHTML=h||'<div class="note" style="padding:12px;text-align:center">🎉 No notifications</div>';
+ {const n=(h.match(/class="alert/g)||[]).length;let seen="";try{seen=localStorage.getItem("lw-seen")||""}catch(e){}$("alerts").dataset.sig=h;$("bn").hidden=!n;$("bn").textContent=n;$("bn").classList.toggle("gone",!n||h===seen)}
+ $("tab-ok").innerHTML=`✅ Approved – work schedule${o.length?`<span class="badge">${o.length}</span>`:""}`;document.title=(o.length?`(${o.length}) `:"")+"Light Work Tracker"}
+$("alerts").onclick=e=>{if(e.target.dataset&&e.target.dataset.go){setView("ok");$("alerts").classList.remove("open")}};
+function setView(v){view=v;sortK="start";sortD=v==="ok"?1:-1;page=0;$("tab-all").classList.toggle("on",v==="work");$("tab-mat").classList.toggle("on",v==="mat");$("tab-ok").classList.toggle("on",v==="ok");$("fkind").style.display=v==="ok"?"":"none";$("fhot").style.display=v==="mat"?"none":"";if(v!=="ok")$("f-kind").value=v;setHead();render()}
 $("tab-all").onclick=()=>setView("work");$("tab-mat").onclick=()=>setView("mat");$("tab-ok").onclick=()=>setView("ok");
-function cd(r){const D=864e5,n=new Date(),t0=Date.UTC(n.getFullYear(),n.getMonth(),n.getDate()),p=s=>{const[a,b,c]=s.split("-");return Date.UTC(+a,b-1,+c)};const s=p(r.start),e=p(r.end||r.start);
+function cd(r){const D=864e5,n=new Date(),t0=Date.UTC(n.getFullYear(),n.getMonth(),n.getDate()),p=s=>{const[a,b,c]=s.split("-");return Date.UTC(+a,b-1,+c)};if(!r.start)return{k:"",txt:"—"};const s=p(r.start),e=p(r.end||r.start);
  if(t0<s){const d=Math.round((s-t0)/D);return{k:d<=2?"urg":"",txt:d===1?"⏳ Starts tomorrow":"⏳ Starts in "+d+" days"}}
  if(t0<=e){const left=Math.round((e-t0)/D),dn=Math.round((t0-s)/D)+1,tot=Math.round((e-s)/D)+1;return{k:"run",txt:`🔧 Working · day ${dn} of ${tot} · ${left?left+(left>1?" days left":" day left"):"last day"}`}}
  return{k:"late",txt:`🚨 Ended ${Math.round((t0-e)/D)} day(s) ago · mark Completed`}}
-$("head").onclick=e=>{const k=e.target.dataset?.k;if(!k)return;sortD=sortK===k?-sortD:1;sortK=k;page=0;render()};
+$("head").onclick=e=>{const k=e.target.dataset&&e.target.dataset.k;if(!k)return;sortD=sortK===k?-sortD:1;sortK=k;page=0;render()};
 $("fst").innerHTML+=STS.map(s=>`<option value="${s}">${SI[s]} ${s}</option>`).join("");
 ["q","fco","fkind","fhot","fst"].forEach(i=>$(i).oninput=()=>{page=0;render()});
 $("prev").onclick=()=>{if(page>0){page--;render()}};$("next").onclick=()=>{page++;render()};
+const A=r=>`data-id="${esc(r.id)}"`;
+const ed=(r,f,v,c)=>`<div class="ed${c?" "+c:""}" contenteditable="true" spellcheck="false" ${A(r)} data-f="${f}">${esc(v)}</div>`;
+const yn=(r,f,cur)=>`<select class="sm" ${A(r)} data-f="${f}"><option value="No" ${!cur?"selected":""}>No</option><option value="Yes" ${cur?"selected":""}>Yes</option></select>`;
+const hotSel=r=>`<select class="sm" ${A(r)} data-f="hot"><option value="No" ${!r.hot?"selected":""}>No</option><option value="Yes" ${r.hot?"selected":""}>🔥 Yes</option></select>`;
+const dirSel=r=>`<select class="sm" ${A(r)} data-f="dir"><option ${r.dir!=="In"?"selected":""}>Out</option><option ${r.dir==="In"?"selected":""}>In</option></select>`;
+const CELL={
+ cd:(r,c)=>`<td class="cd ${c.k}">${esc(c.txt)}</td>`,
+ ref:r=>`<td><input class="rf${r.status==="Approved"&&!r.ref?" need":""}" ${A(r)} data-f="ref" value="${esc(r.ref)}" placeholder="L-xxxx"></td>`,
+ kind:r=>`<td><select class="kd" ${A(r)} data-f="kind"><option value="work" ${r.kind!=="mat"?"selected":""}>👷 Light work</option><option value="mat" ${r.kind==="mat"?"selected":""}>📦 Material</option></select></td>`,
+ start:r=>`<td><input type="date" class="dt" ${A(r)} data-f="start" value="${esc(r.start)}"></td>`,
+ end:r=>`<td><input type="date" class="dt" ${A(r)} data-f="end" value="${esc(r.end)}"></td>`,
+ time:r=>`<td>${ed(r,"time",r.time)}</td>`,
+ type:r=>`<td>${ed(r,"type",r.type,"t")}</td>`,
+ location:r=>`<td>${ed(r,"location",r.location)}</td>`,
+ company:r=>`<td>${ed(r,"company",r.company)}</td>`,
+ by:r=>`<td>${ed(r,"by",r.by)}</td>`,
+ phone:r=>`<td>${ed(r,"phone",r.phone)}${r.phone?`<a class="call" href="tel:${esc(r.phone.replace(/[^\d+]/g,""))}">📞 Call</a>`:""}</td>`,
+ hot:r=>`<td>${r.kind==="mat"?"—":hotSel(r)}</td>`,
+ dir:r=>`<td>${dirSel(r)}</td>`,
+ ret:r=>`<td>${yn(r,"ret",r.ret)}</td>`,
+ extra:r=>`<td>${r.kind==="mat"?dirSel(r)+" "+`<select class="sm" ${A(r)} data-f="ret" title="Returns after service?"><option value="No" ${!r.ret?"selected":""}>No return</option><option value="Yes" ${r.ret?"selected":""}>↩ Returns</option></select>`:hotSel(r)}</td>`,
+ status:r=>`<td><select class="st s-${r.status}" ${A(r)} data-f="status">${STS.map(s=>`<option value="${s}" ${s===r.status?"selected":""}>${SI[s]} ${s}</option>`).join("")}</select></td>`
+};
 function render(){
  const cos=[...new Set(rows.map(r=>r.company).filter(Boolean))].sort(),cur=$("fco").value;
  $("fco").innerHTML='<option value="">All companies</option>'+cos.map(c=>`<option ${c===cur?"selected":""}>${esc(c)}</option>`).join("");
  const q=$("q").value.toLowerCase(),fh=$("fhot").value,fk=$("fkind").value,fs=$("fst").value,fc=$("fco").value;
- let list=rows.map((r,i)=>({...r,i,st:stOf(r)})).filter(r=>(!q||[r.company,r.type,r.location,r.by,r.phone,r.ref].join(" ").toLowerCase().includes(q))&&(!fc||r.company===fc)&&(!fh||(fh==="1")===r.hot)&&(view==="work"?r.kind!=="mat":view==="mat"?r.kind==="mat":(!fk||(r.kind==="mat")===(fk==="mat")))&&(view==="ok"?r.st==="Approved":(!fs||r.st===fs)));
- list.sort((a,b)=>{const x=a[sortK]??"",y=b[sortK]??"";return(x>y?1:x<y?-1:0)*sortD});
+ let list=rows.filter(r=>(!q||[r.company,r.type,r.location,r.by,r.phone,r.ref].join(" ").toLowerCase().includes(q))&&(!fc||r.company===fc)&&(!fh||view==="mat"||(fh==="1")===r.hot)&&(view==="work"?r.kind!=="mat":view==="mat"?r.kind==="mat":(!fk||(r.kind==="mat")===(fk==="mat")))&&(view==="ok"?r.status==="Approved":(!fs||r.status===fs)));
+ const cmp=(a,b)=>{const x=String(a[sortK]??""),y=String(b[sortK]??"");return(x>y?1:x<y?-1:0)*sortD};
+ list.sort((a,b)=>view==="ok"?cmp(a,b):((GO.indexOf(a.status)-GO.indexOf(b.status))||cmp(a,b)));
+ const cnt={};list.forEach(r=>cnt[r.status]=(cnt[r.status]||0)+1);
  const pages=Math.max(1,Math.ceil(list.length/PS));if(page>=pages)page=pages-1;
- const show=list.slice(page*PS,page*PS+PS);
- $("body").innerHTML=show.length?show.map(r=>{const c=view==="ok"?cd(r):null;return `<tr class="${c?(c.k==="late"?"late":/last day/.test(c.txt)?"today":""):""}">${c?`<td class="cd ${c.k}">${esc(c.txt)}</td>`:""}<td><input class="rf${r.st==="Approved"&&!r.ref?" need":""}" data-r="${r.i}" value="${esc(r.ref)}" placeholder="L-xxxx"></td>${view!=="work"?`<td><span class="tag ${r.kind==="mat"?"mt":"lw"}">${r.kind==="mat"?"📦 Material "+(r.dir||"")+(r.ret?" ↩":""):"👷 Light work"}</span></td>`:""}<td>${esc(r.start)}</td><td>${esc(r.end)}</td><td>${esc(r.time)}</td><td>${esc(r.type)}</td><td>${esc(r.location)}</td><td>${esc(r.company)}</td><td>${esc(r.by)}</td><td>${r.phone?`<a href="tel:${esc(r.phone.replace(/\s/g,""))}">📞 ${esc(r.phone)}</a>`:""}</td>${view==="mat"?"":`<td>${r.kind==="mat"?"—":`<span class="tag ${r.hot?"hot":"no"}">${r.hot?"🔥 Hot work":"No"}</span>`}</td>`}<td><select class="st s-${r.st}" data-s="${r.i}">${STS.map(s=>`<option value="${s}" ${s===r.st?"selected":""}>${SI[s]} ${s}</option>`).join("")}</select></td><td>${["Approved","Completed"].includes(r.st)?`${(r.docs||[]).map((d,j)=>`<div class="doc"><a href="#" data-o="${r.i}:${j}" title="${esc(d.name)}">📄 ${esc(d.name.length>18?d.name.slice(0,16)+"…":d.name)}</a><button class="x" data-xd="${r.i}:${j}" title="Remove">✕</button></div>`).join("")}<button class="at" data-a="${r.i}">📎 Attach</button>`:`<span class="note">after approval</span>`}</td><td><button class="x" data-e="${r.i}" title="Edit">✏️</button><button class="x" data-d="${r.i}" title="Delete">✕</button></td></tr>`}).join(""):`<tr><td colspan="11" class="empty">No requests yet. Add one above or import a CSV.</td></tr>`;
+ const show=list.slice(page*PS,page*PS+PS),cols=COLS[view],n=cols.length+1;let html="",last=null;
+ show.forEach(r=>{
+  if(view!=="ok"&&r.status!==last){last=r.status;html+=`<tr class="grp"><td colspan="${n}">${SI[r.status]} ${r.status.toUpperCase()} · ${cnt[r.status]}</td></tr>`}
+  const c=view==="ok"?cd(r):null;
+  html+=`<tr class="${c?(c.k==="late"?"late":/last day/.test(c.txt)?"today":""):""}">${cols.map(k=>CELL[k](r,c)).join("")}<td><button class="x" data-d="${esc(r.id)}" title="Delete">✕</button></td></tr>`});
+ $("body").innerHTML=html||`<tr><td colspan="${n}" class="empty">No requests here yet. Add one above, or add rows directly in the Google Sheet.</td></tr>`;
  renderAlerts();$("pinfo").textContent=`${list.length} shown · page ${page+1}/${pages}`;
- const vr=view==="ok"?rows:rows.filter(r=>(r.kind==="mat")===(view==="mat")),c=s=>vr.filter(r=>stOf(r)===s).length;
- $("stats").innerHTML=[["📋","","Total",vr.length],["⏳","w","Pending",c("Pending")],["✅","g","Approved",c("Approved")],["⏰","r","Ended – to close",overdue().length],["🔥","r","Hot work (pending/approved)",rows.filter(r=>r.hot&&["Pending","Approved"].includes(stOf(r))).length]].map(s=>`<div class="stat ${s[1]}"><i>${s[0]}</i><div><b>${s[3]}</b><span>${s[2]}</span></div></div>`).join("")}
-$("body").onclick=e=>{const d=e.target.dataset?.d;if(d!==undefined&&confirm("Delete this request?")){(rows[+d].docs||[]).forEach(x=>delF(x.fid).catch(()=>{}));rows.splice(+d,1);store();render()}};
-$("body").onchange=e=>{if(LIVE)return;const d=e.target.dataset;if(d?.r!==undefined){rows[+d.r].ref=e.target.value.trim().replace(/^ref\s*[:.]?\s*/i,"");store();render();return}const s=d?.s;if(s===undefined)return;rows[+s].status=e.target.value;store();render();toast(`${SI[e.target.value]} ${rows[+s].company||"Request"} → ${e.target.value}${e.target.value==="Approved"&&!rows[+s].ref?" · add the Ref no.":""}`);if(e.target.value==="Approved"&&!rows[+s].ref){const el=document.querySelector(`input[data-r="${s}"]`);if(el)el.focus()}};
+ const vr=view==="ok"?rows:rows.filter(r=>(r.kind==="mat")===(view==="mat")),c2=s=>vr.filter(r=>stOf(r)===s).length;
+ $("stats").innerHTML=[["📋","","Total",vr.length],["⏳","w","Pending",c2("Pending")],["✅","g","Approved",c2("Approved")],["⏰","r","Ended – to close",overdue().length],["🔥","r","Hot work (pending/approved)",rows.filter(r=>r.hot&&["Pending","Approved"].includes(stOf(r))).length]].map(s=>`<div class="stat ${s[1]}"><i>${s[0]}</i><div><b>${s[3]}</b><span>${s[2]}</span></div></div>`).join("")}
 function toast(m){document.querySelectorAll(".toast").forEach(x=>x.remove());const d=document.createElement("div");d.className="toast";d.textContent=m;document.body.appendChild(d);setTimeout(()=>d.classList.add("f"),3200);setTimeout(()=>d.remove(),3900)}
 $("bell").onclick=e=>{e.stopPropagation();const o=$("alerts").classList.toggle("open");if(o){try{localStorage.setItem("lw-seen",$("alerts").dataset.sig||"")}catch(x){}$("bn").classList.add("gone")}};
 document.addEventListener("click",e=>{if(!e.target.closest("#alerts,#bell"))$("alerts").classList.remove("open")});
-let editIdx=-1;
-function endEdit(){editIdx=-1;$("save").textContent="Save request";$("cancel").hidden=true;$("add").querySelector("summary").textContent="＋ Add request (paste Outlook email or fill in)"}
-$("cancel").onclick=()=>{endEdit();["paste","f-start","f-end","f-time","f-type","f-loc","f-co","f-by","f-ph","f-ref"].forEach(i=>$(i).value="");$("msg").textContent=""};
-$("body").addEventListener("click",e=>{const k=e.target.dataset?.e;if(k===undefined)return;const r=rows[+k];if(!r)return;editIdx=+k;
- const set=(i,v)=>$(i).value=v??"";set("f-start",r.start);set("f-end",r.end);set("f-time",r.time);set("f-type",r.type);set("f-loc",r.location);set("f-co",r.company);set("f-by",r.by);set("f-ph",r.phone);set("f-ref",r.ref);set("f-hot",r.hot?"1":"0");set("f-kind",r.kind==="mat"?"mat":"work");set("f-dir",r.dir||"Out");set("f-ret",r.ret?"1":"0");
- $("add").open=true;$("save").textContent="💾 Save changes";$("cancel").hidden=false;$("add").querySelector("summary").textContent="✏️ Editing request";$("msg").textContent="";$("add").scrollIntoView({behavior:"smooth"})});
-const SU=SHEET_URL,LIVE=!!SU;
-let busy=false;
-async function loadSheet(){if(busy)return;busy=true;try{const resp=await fetch(SU+(SU.includes("?")?"&":"?")+"_="+Date.now(),{cache:"no-store"});if(!resp.ok)throw 0;const t=csvParse(await resp.text());if(t.length<2)throw 0;
- const h=t[0].map(x=>x.trim().toLowerCase()),ix=re=>h.findIndex(x=>re.test(x));
- const I={a:ix(/start|from/),b:ix(/^end|until/),tm:ix(/time/),c:ix(/type|desc|title/),l:ix(/loc/),d:ix(/company|contractor/),by:ix(/^by$|submit|requester|name/),p:ix(/phone|tel/),e:ix(/hot/),s:ix(/status/),rf:ix(/^ref/),k:ix(/^kind/),dr:ix(/^dir/),rt:ix(/^return/)};
- const g=(r,k)=>(I[k]>=0?(r[I[k]]||""):"").trim();
- rows=t.slice(1).map(r=>{const s=pd(g(r,"a"));if(!s)return null;return{start:s,end:pd(g(r,"b"))||s,time:g(r,"tm"),type:g(r,"c"),location:g(r,"l"),company:g(r,"d"),by:g(r,"by"),phone:g(r,"p"),hot:isHot(g(r,"e")),status:STS.find(x=>x.toLowerCase()===g(r,"s").toLowerCase())||"Pending",ref:g(r,"rf"),kind:/mat/i.test(g(r,"k"))?"mat":"work",dir:g(r,"dr"),ret:isHot(g(r,"rt"))}}).filter(Boolean);
- $("live").textContent="🟢 Live · updated "+new Date().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"});render()}
- catch(e){$("live").textContent="⚠️ Couldn’t load the sheet. Retrying…"}
- finally{busy=false;const l=$("ld");if(l){l.classList.add("done");setTimeout(()=>l.remove(),500)}}}
 function applyTheme(t){document.documentElement.dataset.theme=t;$("theme").textContent=t==="dark"?"☀️":"🌙"}
 (function(){let t="";try{t=localStorage.getItem("lw-theme")||""}catch(e){}if(!t)t=matchMedia("(prefers-color-scheme:dark)").matches?"dark":"light";applyTheme(t)})();
 $("theme").onclick=()=>{const t=document.documentElement.dataset.theme==="dark"?"light":"dark";applyTheme(t);try{localStorage.setItem("lw-theme",t)}catch(e){}};
-let db,attachRow=-1;
-function idb(){return new Promise((res,rej)=>{if(db)return res(db);const q=indexedDB.open("lw-files",1);q.onupgradeneeded=()=>q.result.createObjectStore("f");q.onsuccess=()=>{db=q.result;res(db)};q.onerror=()=>rej(q.error)})}
-async function putF(k,b){const d=await idb();return new Promise((res,rej)=>{const t=d.transaction("f","readwrite");t.objectStore("f").put(b,k);t.oncomplete=res;t.onerror=()=>rej(t.error)})}
-async function getF(k){const d=await idb();return new Promise((res,rej)=>{const q=d.transaction("f").objectStore("f").get(k);q.onsuccess=()=>res(q.result);q.onerror=()=>rej(q.error)})}
-async function delF(k){const d=await idb();return new Promise(res=>{const t=d.transaction("f","readwrite");t.objectStore("f").delete(k);t.oncomplete=res;t.onerror=res})}
-$("dfile").onchange=async e=>{const fs=[...e.target.files];e.target.value="";const r=rows[attachRow];if(!r)return;r.docs=r.docs||[];
- for(const f of fs){if(f.size>25e6){alert(f.name+" is over 25 MB, skipped");continue}const fid="d"+Date.now().toString(36)+Math.random().toString(36).slice(2,6);try{await putF(fid,f);r.docs.push({fid,name:f.name,size:f.size})}catch(x){alert("Could not save "+f.name+" (browser storage blocked or full)")}}
- store();render()};
-$("body").addEventListener("click",async e=>{const ds=e.target.dataset||{};
- if(ds.a!==undefined){attachRow=+ds.a;$("dfile").click()}
- if(ds.o!==undefined){e.preventDefault();const[i,j]=ds.o.split(":").map(Number),d=rows[i].docs[j];try{const b=await getF(d.fid);if(!b){alert("File not found in this browser");return}window.open(URL.createObjectURL(b),"_blank")}catch(x){alert("Could not open the file")}}
- if(ds.xd!==undefined){const[i,j]=ds.xd.split(":").map(Number);if(confirm("Remove this document?")){const d=rows[i].docs.splice(j,1)[0];try{await delF(d.fid)}catch(x){}store();render()}}});
-load();setHead();render();setInterval(renderAlerts,60000);
-if(LIVE){document.body.classList.add("live");loadSheet();setInterval(loadSheet,15000);document.addEventListener("visibilitychange",()=>{if(!document.hidden)loadSheet()});window.addEventListener("focus",loadSheet)}
+setHead();render();setInterval(renderAlerts,60000);
+loadData();setInterval(()=>{if(!document.hidden)loadData()},15000);
+document.addEventListener("visibilitychange",()=>{if(!document.hidden)loadData()});window.addEventListener("focus",loadData);
 </script></body></html>
