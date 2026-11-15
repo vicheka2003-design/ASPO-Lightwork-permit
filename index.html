@@ -56,8 +56,10 @@ input.dt{width:132px;padding:3px 6px}select.kd,select.sm{padding:3px 6px;font-si
 .doc{display:flex;align-items:center;gap:2px;max-width:200px;white-space:nowrap}button.at{font-size:12px;padding:3px 8px;margin-top:2px}button.at:disabled{opacity:.6}
 a.call{display:inline-block;font-size:12px;padding:0 6px}
 tr.grp td{background:var(--bg);font-weight:700;font-size:12px;letter-spacing:.02em;color:var(--mut);padding:6px 10px;border-bottom:1px solid var(--bd)}
+.ft{display:flex;gap:16px;align-items:center;flex-wrap:wrap;margin-top:18px;padding:16px;border-top:1px solid var(--bd);color:var(--mut);font-size:12px;line-height:1.6}
+.ft b{color:var(--tx);font-size:13px}.flogo{height:64px;width:auto}
 </style></head><body><div id="ld"><div class="sp"></div><b>Connecting to data…</b><span>Loading your Google Sheet</span><button id="retry" hidden>Try again</button></div><div class="wrap">
-<div class="hd"><i>👷</i><div><h1 style="margin:0">Light Work Tracker</h1><small>Airport work permit requests · approvals · schedule</small></div><button id="bell" title="Notifications" style="margin-left:auto;font-size:18px;padding:6px 10px;position:relative">🔔<span id="bn" class="badge" hidden style="position:absolute;top:-6px;right:-6px;margin:0">0</span></button><button id="theme" title="Switch light / dark">🌙</button></div><div id="alerts"></div>
+<div class="hd"><i>👷</i><div><h1 style="margin:0">Light Work Permit</h1><small>Airport work permit requests · approvals · schedule</small></div><button id="bell" title="Notifications" style="margin-left:auto;font-size:18px;padding:6px 10px;position:relative">🔔<span id="bn" class="badge" hidden style="position:absolute;top:-6px;right:-6px;margin:0">0</span></button><button id="theme" title="Switch light / dark">🌙</button></div><div id="alerts"></div>
 <div class="stats" id="stats"></div>
 
 <details id="add"><summary>＋ Add request (paste Outlook email or fill in)</summary>
@@ -95,7 +97,19 @@ tr.grp td{background:var(--bg);font-weight:700;font-size:12px;letter-spacing:.02
 <input type="file" id="dfile" multiple hidden accept=".pdf,image/*,.doc,.docx,.xls,.xlsx">
 <div class="tw"><table><thead><tr id="head"></tr></thead><tbody id="body"></tbody></table></div>
 <div class="pg"><button id="prev">‹</button><span id="pinfo"></span><button id="next">›</button></div>
-<p class="note">✏️ Click any cell to edit it. Once a permit is Approved you can attach documents (stored in your Google Drive) — changes save to your Google Sheet automatically. Change <b>Status</b> and the row moves to its status group. Change <b>Category</b> to move it between the Light Work and Materials sheets. Edits made directly in the sheet appear here within about 15 seconds.</p>
+<footer class="ft">
+<img src="logo.png" alt="Logo" class="flogo">
+<div>
+<b>Airport Safety Permit Office (ASPO) - SS Department</b><br>
+Airport Permit Control Officer<br>
+Techo International Airport (KTI/VDTI)<br>
+P.O. Box 1256 - Samdach Techo Hun Sen Blvd | KTI Headhouse-Mezzanine Level Zero,<br>
+Phnom Penh | Kingdom of Cambodia<br>
+Tel.: <a href="tel:+85523898989">+855 (0)23 89 89 89</a> | Mob.: <a href="tel:+85570329190">+855 (0) 70 329 190</a><br>
+<a href="mailto:kti.aspo@cambodia-airports.aero">kti.aspo@cambodia-airports.aero</a><br>
+<a href="http://www.cambodia-airports.aero" target="_blank" rel="noopener">www.cambodia-airports.aero</a>
+</div>
+</footer>
 </div>
 <script>
 const APP_URL="https://script.google.com/macros/s/AKfycbzNKrAvhouPM0TAvF_0I1o9HukVViEqKRpb85iusBgo4h1d3fjmYzO2IGBy24b7iRsH/exec";
